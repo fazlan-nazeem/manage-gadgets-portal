@@ -14,7 +14,7 @@ import {
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import MoneyIcon from '@material-ui/icons/Money';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
     height: '100%'
   },
@@ -36,29 +36,15 @@ const Budget = ({ className, ...rest }) => {
   const classes = useStyles();
 
   return (
-    <Card
-      className={clsx(classes.root, className)}
-      {...rest}
-    >
+    <Card className={clsx(classes.root, className)} {...rest}>
       <CardContent>
-        <Grid
-          container
-          justify="space-between"
-          spacing={3}
-        >
+        <Grid container justify="space-between" spacing={3}>
           <Grid item>
-            <Typography
-              color="textSecondary"
-              gutterBottom
-              variant="h6"
-            >
-              BUDGET
+            <Typography color="textSecondary" gutterBottom variant="h6">
+              TOTAL DEVICES
             </Typography>
-            <Typography
-              color="textPrimary"
-              variant="h3"
-            >
-              $24,000
+            <Typography color="textPrimary" variant="h3">
+              318
             </Typography>
           </Grid>
           <Grid item>
@@ -67,23 +53,13 @@ const Budget = ({ className, ...rest }) => {
             </Avatar>
           </Grid>
         </Grid>
-        <Box
-          mt={2}
-          display="flex"
-          alignItems="center"
-        >
+        <Box mt={2} display="flex" alignItems="center">
           <ArrowDownwardIcon className={classes.differenceIcon} />
-          <Typography
-            className={classes.differenceValue}
-            variant="body2"
-          >
-            12%
+          <Typography className={classes.differenceValue} variant="body2">
+            23
           </Typography>
-          <Typography
-            color="textSecondary"
-            variant="caption"
-          >
-            Since last month
+          <Typography color="textSecondary" variant="caption">
+            New devices added this month
           </Typography>
         </Box>
       </CardContent>

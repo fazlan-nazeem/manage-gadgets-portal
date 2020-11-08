@@ -41,7 +41,7 @@ const TrafficByDevice = ({ className, ...rest }) => {
         hoverBorderColor: colors.common.white
       }
     ],
-    labels: ['Desktop', 'Tablet', 'Mobile']
+    labels: ['Laptop', 'Monitor', 'Mobile']
   };
 
   const options = {
@@ -68,13 +68,13 @@ const TrafficByDevice = ({ className, ...rest }) => {
 
   const devices = [
     {
-      title: 'Desktop',
+      title: 'Laptop',
       value: 63,
       icon: LaptopMacIcon,
       color: colors.indigo[500]
     },
     {
-      title: 'Tablet',
+      title: 'Monitor',
       value: 15,
       icon: TabletIcon,
       color: colors.red[600]
@@ -88,51 +88,22 @@ const TrafficByDevice = ({ className, ...rest }) => {
   ];
 
   return (
-    <Card
-      className={clsx(classes.root, className)}
-      {...rest}
-    >
-      <CardHeader title="Traffic by Device" />
+    <Card className={clsx(classes.root, className)} {...rest}>
+      <CardHeader title="Count by Device Type" />
       <Divider />
       <CardContent>
-        <Box
-          height={300}
-          position="relative"
-        >
-          <Doughnut
-            data={data}
-            options={options}
-          />
+        <Box height={300} position="relative">
+          <Doughnut data={data} options={options} />
         </Box>
-        <Box
-          display="flex"
-          justifyContent="center"
-          mt={2}
-        >
-          {devices.map(({
-            color,
-            icon: Icon,
-            title,
-            value
-          }) => (
-            <Box
-              key={title}
-              p={1}
-              textAlign="center"
-            >
+        <Box display="flex" justifyContent="center" mt={2}>
+          {devices.map(({ color, icon: Icon, title, value }) => (
+            <Box key={title} p={1} textAlign="center">
               <Icon color="action" />
-              <Typography
-                color="textPrimary"
-                variant="body1"
-              >
+              <Typography color="textPrimary" variant="body1">
                 {title}
               </Typography>
-              <Typography
-                style={{ color }}
-                variant="h2"
-              >
-                {value}
-                %
+              <Typography style={{ color }} variant="h2">
+                {value}%
               </Typography>
             </Box>
           ))}
