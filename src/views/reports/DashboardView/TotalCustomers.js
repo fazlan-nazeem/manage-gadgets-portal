@@ -41,10 +41,10 @@ const TotalCustomers = ({ className, ...rest }) => {
         <Grid container justify="space-between" spacing={3}>
           <Grid item>
             <Typography color="textSecondary" gutterBottom variant="h6">
-              TOTAL ASSIGNED
+              TOTAL IN-PROGRESS
             </Typography>
             <Typography color="textPrimary" variant="h3">
-              212
+              18
             </Typography>
           </Grid>
           <Grid item>

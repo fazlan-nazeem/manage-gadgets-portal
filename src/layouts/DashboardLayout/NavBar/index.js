@@ -37,7 +37,11 @@ const items = [
     icon: BarChartIcon,
     title: 'Dashboard'
   },
-
+  {
+    href: '/app/devices',
+    icon: DatabaseIcon,
+    title: 'Devices'
+  },
   {
     href: '/app/repairs',
     icon: ActivityIcon,

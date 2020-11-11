@@ -32,7 +32,7 @@ const TotalProfit = ({ className, ...rest }) => {
         <Grid container justify="space-between" spacing={3}>
           <Grid item>
             <Typography color="textSecondary" gutterBottom variant="h6">
-              Pending Requests
+              TOTAL UNREPAIRABLE
             </Typography>
             <Typography color="textPrimary" variant="h3">
               7

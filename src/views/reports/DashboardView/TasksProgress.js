@@ -34,10 +34,10 @@ const TasksProgress = ({ className, ...rest }) => {
         <Grid container justify="space-between" spacing={3}>
           <Grid item>
             <Typography color="textSecondary" gutterBottom variant="h6">
-              UNDER REPAIR
+              TOTAL COMPLETED
             </Typography>
             <Typography color="textPrimary" variant="h3">
-              4
+              55
             </Typography>
           </Grid>
           <Grid item>
