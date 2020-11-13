@@ -13,6 +13,7 @@ import {
   MenuItem
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { useMutation, gql } from '@apollo/client';
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -24,13 +25,62 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const UPDATE_REPAIR = gql`
+  mutation UPDATE_REPAIR($input: RepairInput) {
+    updateRepair(input: $input) {
+      id
+      device {
+        serialNumber
+        category
+        description
+        employee {
+          email
+          name
+        }
+      }
+      createdDate
+      status
+      repairDescription
+    }
+  }
+`;
+
+const GET_REPAIRS = gql`
+  query GetRepairs {
+    getRepairs {
+      hasMore
+      repairs {
+        id
+        status
+        createdDate
+        repairDescription
+        device {
+          id
+          serialNumber
+          category
+          description
+          employee {
+            name
+            email
+          }
+        }
+      }
+    }
+  }
+`;
+
 const EditRepair = props => {
   const classes = useStyles();
   const isOpen = props.isEditMode;
   let dataOfEditedRow = props.rowData;
+  const repairUuid = dataOfEditedRow.id;
 
-  const [category, setCategory] = useState('');
-  const [status, setStatus] = useState('');
+  const [repairDescription, setRepairDescription] = useState(
+    dataOfEditedRow.repairDescription
+  );
+  const [repairStatus, setRepairStatus] = useState(dataOfEditedRow.status);
+
+  const [confirmUpdateRepair] = useMutation(UPDATE_REPAIR);
 
   return (
     <div>
@@ -50,6 +100,7 @@ const EditRepair = props => {
             label="Serial Number"
             fullWidth
             defaultValue={dataOfEditedRow.device.serialNumber}
+            disabled
           />
           <TextField
             autoFocus
@@ -57,10 +108,11 @@ const EditRepair = props => {
             label="Description"
             fullWidth
             defaultValue={dataOfEditedRow.device.description}
+            disabled
           />
           <FormControl className={classes.formControl}>
             <InputLabel>Category</InputLabel>
-            <Select defaultValue={dataOfEditedRow.device.category}>
+            <Select defaultValue={dataOfEditedRow.device.category} disabled>
               <MenuItem value={'LAPTOP'}>LAPTOP</MenuItem>
               <MenuItem value={'MONITOR'}>MONITOR</MenuItem>
               <MenuItem value={'MOBILE'}>MOBILE</MenuItem>
@@ -72,6 +124,7 @@ const EditRepair = props => {
             label="Remarks"
             fullWidth
             defaultValue={dataOfEditedRow.repairDescription}
+            onChange={e => setRepairDescription(e.target.value)}
           />
           <TextField
             autoFocus
@@ -79,6 +132,7 @@ const EditRepair = props => {
             label="Employee name"
             fullWidth
             defaultValue={dataOfEditedRow.device.employee.name}
+            disabled
           />
           <TextField
             autoFocus
@@ -87,14 +141,18 @@ const EditRepair = props => {
             type="email"
             fullWidth
             defaultValue={dataOfEditedRow.device.employee.email}
+            disabled
           />
 
           <FormControl className={classes.formControl}>
             <InputLabel>Status</InputLabel>
-            <Select defaultValue={dataOfEditedRow.status}>
+            <Select
+              defaultValue={dataOfEditedRow.status}
+              onChange={e => setRepairStatus(e.target.value)}
+            >
               <MenuItem value={'PENDING'}>PENDING</MenuItem>
               <MenuItem value={'IN_PROGRESS'}>IN_PROGRESS</MenuItem>
-              <MenuItem value={'COMPLETE'}>COMPLETE</MenuItem>
+              <MenuItem value={'COMPLETED'}>COMPLETED</MenuItem>
             </Select>
           </FormControl>
         </DialogContent>
@@ -102,7 +160,25 @@ const EditRepair = props => {
           <Button onClick={props.handleClosed} color="primary">
             Cancel
           </Button>
-          <Button onClick={props.handleClosed} color="primary">
+          <Button
+            onClick={e => {
+              confirmUpdateRepair({
+                variables: {
+                  input: {
+                    repairUuid,
+                    repairDescription,
+                    repairStatus
+                  }
+                },
+                refetchQueries: [{ query: GET_REPAIRS }]
+              });
+              props.handleClosed({
+                confirmed: true,
+                message: 'Successfully updated repair entry!'
+              });
+            }}
+            color="primary"
+          >
             Update
           </Button>
         </DialogActions>

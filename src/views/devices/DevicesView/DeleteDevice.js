@@ -7,9 +7,53 @@ import {
   DialogContentText,
   DialogTitle
 } from '@material-ui/core';
+import { useMutation, gql } from '@apollo/client';
+
+const DELETE_DEVICE = gql`
+  mutation DeleteDevice($deviceId: ID!) {
+    deleteDevice(deviceId: $deviceId) {
+      id
+    }
+  }
+`;
+
+const GET_DEVICES = gql`
+  query GET_DEVICES {
+    getDevices(pageSize: 20) {
+      devices {
+        id
+        serialNumber
+        description
+        category
+        employee {
+          name
+          email
+          assignedTime
+        }
+      }
+    }
+  }
+`;
 
 const DeleteDevice = props => {
-  const isOpen = props.isOpen;
+  const isOpen = props.isDeleteMode;
+  const [confirmDeleteDevice] = useMutation(DELETE_DEVICE);
+  let dataOfCurrentlySelectedRow = props.rowData;
+  const deviceId = dataOfCurrentlySelectedRow.id;
+
+  const handleDeleteConfirmation = () => {
+    confirmDeleteDevice({
+      variables: {
+        deviceId
+      },
+      refetchQueries: [{ query: GET_DEVICES }],
+      awaitRefetchQueries: true
+    });
+    props.handleClosed({
+      confirmed: true,
+      message: 'Successfully deleted device entry!'
+    });
+  };
 
   return (
     <div>
@@ -28,7 +72,7 @@ const DeleteDevice = props => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={props.handleClosed} color="primary">
+          <Button onClick={handleDeleteConfirmation} color="primary">
             Yes
           </Button>
           <Button onClick={props.handleClosed} color="primary" autoFocus>

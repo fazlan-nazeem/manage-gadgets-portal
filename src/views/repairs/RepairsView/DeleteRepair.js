@@ -7,9 +7,46 @@ import {
   DialogContentText,
   DialogTitle
 } from '@material-ui/core';
+import { useMutation, gql } from '@apollo/client';
+
+const DELETE_REPAIR = gql`
+  mutation DeleteRepair($repairId: ID!) {
+    deleteRepair(repairId: $repairId) {
+      id
+    }
+  }
+`;
+
+const GET_REPAIRS = gql`
+  query GetRepairs {
+    getRepairs {
+      hasMore
+      repairs {
+        id
+        status
+        createdDate
+        repairDescription
+        device {
+          id
+          serialNumber
+          category
+          description
+          employee {
+            name
+            email
+          }
+        }
+      }
+    }
+  }
+`;
 
 const DeleteRepair = props => {
   const isOpen = props.isOpen;
+  let dataOfCurrentlySelectedRow = props.rowData;
+  const repairId = dataOfCurrentlySelectedRow.id;
+
+  const [confirmDeleteRepair] = useMutation(DELETE_REPAIR);
 
   return (
     <div>
@@ -28,7 +65,21 @@ const DeleteRepair = props => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={props.handleClosed} color="primary">
+          <Button
+            onClick={e => {
+              confirmDeleteRepair({
+                variables: {
+                  repairId
+                },
+                refetchQueries: [{ query: GET_REPAIRS }]
+              });
+              props.handleClosed({
+                confirmed: true,
+                message: 'Successfully deleted repair entry!'
+              });
+            }}
+            color="primary"
+          >
             Yes
           </Button>
           <Button onClick={props.handleClosed} color="primary" autoFocus>

@@ -1,19 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  TextField,
-  InputAdornment,
-  SvgIcon,
-  makeStyles,
-  IconButton,
-  Tooltip
-} from '@material-ui/core';
-import { Search as SearchIcon } from 'react-feather';
+import { Box, makeStyles, IconButton, Tooltip } from '@material-ui/core';
 import { Download as DownloadIcon } from 'react-feather';
 
 import ExportRepairData from './ExportRepairData';
@@ -30,9 +18,6 @@ const useStyles = makeStyles(theme => ({
 
 const Toolbar = ({ className, ...rest }) => {
   const classes = useStyles();
-
-  const [isAddRepairOpen, handleAddRepairOpen] = useState(false);
-  const handleAddRepairClosed = () => handleAddRepairOpen(false);
 
   const [isExportOpen, handlExportOpen] = useState(false);
   const handleExportClosed = () => handlExportOpen(false);
@@ -65,29 +50,6 @@ const Toolbar = ({ className, ...rest }) => {
             isOpen={isExportOpen}
             handleClosed={handleExportClosed}
           />
-        </Box>
-
-        <Box mt={3}>
-          <Card>
-            <CardContent>
-              <Box maxWidth={500}>
-                <TextField
-                  fullWidth
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SvgIcon fontSize="small" color="action">
-                          <SearchIcon />
-                        </SvgIcon>
-                      </InputAdornment>
-                    )
-                  }}
-                  placeholder="Search"
-                  variant="outlined"
-                />
-              </Box>
-            </CardContent>
-          </Card>
         </Box>
       </div>
     </div>

@@ -12,7 +12,7 @@ import {
   makeStyles
 } from '@material-ui/core';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
-import PeopleIcon from '@material-ui/icons/PeopleOutlined';
+import BuildIcon from '@material-ui/icons/Build';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -41,27 +41,18 @@ const TotalCustomers = ({ className, ...rest }) => {
         <Grid container justify="space-between" spacing={3}>
           <Grid item>
             <Typography color="textSecondary" gutterBottom variant="h6">
-              TOTAL IN-PROGRESS
+              TOTAL UNDER REPAIR
             </Typography>
-            <Typography color="textPrimary" variant="h3">
+            <Typography color="textPrimary" variant="h1">
               18
             </Typography>
           </Grid>
           <Grid item>
             <Avatar className={classes.avatar}>
-              <PeopleIcon />
+              <BuildIcon />
             </Avatar>
           </Grid>
         </Grid>
-        <Box mt={2} display="flex" alignItems="center">
-          <ArrowUpwardIcon className={classes.differenceIcon} />
-          <Typography className={classes.differenceValue} variant="body2">
-            16
-          </Typography>
-          <Typography color="textSecondary" variant="caption">
-            New assignments this month
-          </Typography>
-        </Box>
       </CardContent>
     </Card>
   );

@@ -14,8 +14,13 @@ import {
   TableRow,
   makeStyles,
   IconButton,
-  Tooltip
+  Tooltip,
+  CardContent,
+  TextField,
+  InputAdornment,
+  SvgIcon
 } from '@material-ui/core';
+import { Search as SearchIcon } from 'react-feather';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import BugReportIcon from '@material-ui/icons/BugReport';
@@ -23,23 +28,38 @@ import EditDevice from './EditDevice';
 import DeleteDevice from './DeleteDevice';
 import RepairDevice from './RepairDevice';
 import { useQuery, gql } from '@apollo/client';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles(theme => ({
-  root: {},
   avatar: {
     marginRight: theme.spacing(2)
+  },
+  root: {
+    width: '100%',
+    '& > * + *': {
+      marginTop: theme.spacing(2)
+    }
   }
 }));
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const Results = ({ className, devices, ...rest }) => {
   const classes = useStyles();
 
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(0);
+  const [keyword, setkeyword] = useState('');
   const [isEditMode, setEditMode] = useState(false);
   const [isDeleteMode, setDeleteMode] = useState(false);
   const [isRepairMode, setRepairMode] = useState(false);
+  const [snackBarOpen, setSnackBarOpen] = useState(false);
+  const [message, setMessage] = useState('');
   const [rowData, setRowData] = useState({
+    id: '',
     serialNumber: '',
     description: '',
     employee: { name: '', email: '' },
@@ -47,8 +67,9 @@ const Results = ({ className, devices, ...rest }) => {
   });
 
   const GET_DEVICES = gql`
-    query GET_DEVICES {
-      getDevices(pageSize: 20) {
+    query GET_DEVICES($pageSize: Int, $after: String, $keyword: String) {
+      getDevices(pageSize: $pageSize, after: $after, keyword: $keyword) {
+        totalCount
         devices {
           id
           serialNumber
@@ -64,11 +85,6 @@ const Results = ({ className, devices, ...rest }) => {
     }
   `;
 
-  const { loading, error, data } = useQuery(GET_DEVICES, {});
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error :(</p>;
-
   const handleLimitChange = event => {
     setLimit(event.target.value);
   };
@@ -79,26 +95,77 @@ const Results = ({ className, devices, ...rest }) => {
 
   const handleDeviceEdit = i => {
     setEditMode(true);
-    const dataOfEditedRow = data.getDevices.devices.slice(0, limit)[i];
-    setRowData(dataOfEditedRow);
+    const dataOfSelectedRow = data.getDevices.devices.slice(0, limit)[i];
+    setRowData(dataOfSelectedRow);
   };
 
   const handleDeviceRepair = i => {
     setRepairMode(true);
-    const dataOfEditedRow = data.getDevices.devices.slice(0, limit)[i];
-    setRowData(dataOfEditedRow);
+    const dataOfSelectedRow = data.getDevices.devices.slice(0, limit)[i];
+    setRowData(dataOfSelectedRow);
   };
 
-  const handleDeviceDelete = event => {
+  const handleDeviceDelete = i => {
     setDeleteMode(true);
+    const dataOfSelectedRow = data.getDevices.devices.slice(0, limit)[i];
+    setRowData(dataOfSelectedRow);
   };
 
-  const handleEditClosed = () => setEditMode(false);
-  const handleDeviceClosed = () => setDeleteMode(false);
-  const handleRepairClosed = () => setRepairMode(false);
+  const { loading, error, data } = useQuery(GET_DEVICES, {
+    variables: {
+      pageSize: limit,
+      after: (page * limit).toString(),
+      keyword: keyword
+    }
+  });
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error :(</p>;
+
+  const handleDialogClosed = args => {
+    setEditMode(false);
+    setDeleteMode(false);
+    setRepairMode(false);
+    if (args != null && args.confirmed === true) {
+      setMessage(args.message);
+      setSnackBarOpen(true);
+    }
+  };
+
+  const handleSearch = event => {
+    let searchQuery = event.target.value;
+
+    if (event.key === 'Enter') {
+      setkeyword(searchQuery);
+    }
+  };
 
   return (
     <Card className={clsx(classes.root, className)} {...rest}>
+      <Box mt={3}>
+        <Card>
+          <CardContent>
+            <Box maxWidth={500}>
+              <TextField
+                onKeyPress={handleSearch}
+                defaultValue={keyword}
+                fullWidth
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SvgIcon fontSize="small" color="action">
+                        <SearchIcon />
+                      </SvgIcon>
+                    </InputAdornment>
+                  )
+                }}
+                placeholder="Search"
+                variant="outlined"
+              />
+            </Box>
+          </CardContent>
+        </Card>
+      </Box>
       <PerfectScrollbar>
         <Box minWidth={1050}>
           <Table>
@@ -150,7 +217,7 @@ const Results = ({ className, devices, ...rest }) => {
                     <Tooltip title="Delete entry">
                       <IconButton
                         aria-label="delete"
-                        onClick={handleDeviceDelete}
+                        onClick={e => handleDeviceDelete(i)}
                       >
                         <DeleteIcon />
                       </IconButton>
@@ -161,21 +228,40 @@ const Results = ({ className, devices, ...rest }) => {
             </TableBody>
           </Table>
         </Box>
-        <EditDevice
-          isEditMode={isEditMode}
-          handleClosed={handleEditClosed}
-          rowData={rowData}
-        />
-        <RepairDevice
-          isOpen={isRepairMode}
-          handleClosed={handleRepairClosed}
-          rowData={rowData}
-        />
-        <DeleteDevice isOpen={isDeleteMode} handleClosed={handleDeviceClosed} />
+        {isEditMode ? (
+          <EditDevice
+            isEditMode={isEditMode}
+            handleClosed={handleDialogClosed}
+            rowData={rowData}
+          />
+        ) : null}
+        {isRepairMode ? (
+          <RepairDevice
+            isRepairMode={isRepairMode}
+            handleClosed={handleDialogClosed}
+            rowData={rowData}
+          />
+        ) : null}
+        {isDeleteMode ? (
+          <DeleteDevice
+            isDeleteMode={isDeleteMode}
+            handleClosed={handleDialogClosed}
+            rowData={rowData}
+          />
+        ) : null}
+        <div className={classes.root}>
+          <Snackbar
+            open={snackBarOpen}
+            autoHideDuration={4000}
+            onClose={() => setSnackBarOpen(false)}
+          >
+            <Alert severity="success">{message}</Alert>
+          </Snackbar>
+        </div>
       </PerfectScrollbar>
       <TablePagination
         component="div"
-        count={data.getDevices.devices.length}
+        count={data.getDevices.totalCount}
         onChangePage={handlePageChange}
         onChangeRowsPerPage={handleLimitChange}
         page={page}

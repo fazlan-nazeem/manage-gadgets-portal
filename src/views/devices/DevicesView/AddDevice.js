@@ -14,8 +14,6 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useMutation, gql } from '@apollo/client';
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -24,18 +22,8 @@ const useStyles = makeStyles(theme => ({
   },
   selectEmpty: {
     marginTop: theme.spacing(2)
-  },
-  root: {
-    width: '100%',
-    '& > * + *': {
-      marginTop: theme.spacing(2)
-    }
   }
 }));
-
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
 
 const ADD_DEVICE = gql`
   mutation ADD_DEVICE($input: DeviceInput) {
@@ -53,7 +41,8 @@ const ADD_DEVICE = gql`
 
 const GET_DEVICES = gql`
   query GET_DEVICES {
-    getDevices(pageSize: 20) {
+    getDevices(pageSize: 25) {
+      totalCount
       devices {
         id
         serialNumber
@@ -73,8 +62,7 @@ const AddDevice = props => {
   const classes = useStyles();
   const isOpen = props.isOpen;
 
-  const [confirmAddDevice, { data }] = useMutation(ADD_DEVICE);
-  const [snackBarOpen, setSnackBarOpen] = useState(false);
+  const [confirmAddDevice] = useMutation(ADD_DEVICE);
 
   const [serialNumber, setSerialNumber] = useState('');
   const [description, setDescription] = useState('');
@@ -115,7 +103,6 @@ const AddDevice = props => {
             <Select
               labelId="demo-simple-select-label"
               id="3"
-              value={category}
               onChange={event => setCategory(event.target.value)}
             >
               <MenuItem value={'LAPTOP'}>LAPTOP</MenuItem>
@@ -159,8 +146,11 @@ const AddDevice = props => {
                 },
                 refetchQueries: [{ query: GET_DEVICES }]
               });
-              setSnackBarOpen(true);
-              props.handleClosed();
+
+              props.handleClosed({
+                confirmed: true,
+                message: 'Successfully added device entry!'
+              });
             }}
             color="primary"
           >
@@ -168,15 +158,6 @@ const AddDevice = props => {
           </Button>
         </DialogActions>
       </Dialog>
-      <div className={classes.root}>
-        <Snackbar
-          open={snackBarOpen}
-          autoHideDuration={4000}
-          onClose={() => setSnackBarOpen(false)}
-        >
-          <Alert severity="success">Device successfuly added to repair!</Alert>
-        </Snackbar>
-      </div>
     </div>
   );
 };

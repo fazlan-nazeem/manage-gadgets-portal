@@ -8,7 +8,6 @@ import LoginView from 'src/views/auth/LoginView';
 import NotFoundView from 'src/views/errors/NotFoundView';
 
 import RegisterView from 'src/views/auth/RegisterView';
-import SettingsView from 'src/views/settings/SettingsView';
 import RepairsView from 'src/views/repairs/RepairsView';
 import DevicesView from 'src/views/devices/DevicesView';
 
@@ -19,7 +18,6 @@ const routes = [
     children: [
       { path: 'account', element: <AccountView /> },
       { path: 'dashboard', element: <DashboardView /> },
-      { path: 'settings', element: <SettingsView /> },
       { path: 'repairs', element: <RepairsView /> },
       { path: 'devices', element: <DevicesView /> },
       { path: '*', element: <Navigate to="/404" /> }

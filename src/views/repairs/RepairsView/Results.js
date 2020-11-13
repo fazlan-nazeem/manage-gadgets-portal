@@ -12,32 +12,51 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Typography,
   makeStyles,
   IconButton,
-  Button
+  Button,
+  CardContent,
+  TextField,
+  InputAdornment,
+  SvgIcon
 } from '@material-ui/core';
+import { Search as SearchIcon } from 'react-feather';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditRepair from './EditRepair';
 import DeleteRepair from './DeleteRepair';
 import { useQuery, gql } from '@apollo/client';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles(theme => ({
-  root: {},
   avatar: {
     marginRight: theme.spacing(2)
+  },
+  root: {
+    width: '100%',
+    '& > * + *': {
+      marginTop: theme.spacing(2)
+    }
   }
 }));
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const Results = ({ className, ...rest }) => {
   const classes = useStyles();
 
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(0);
+  const [keyword, setkeyword] = useState('');
   const [isEditMode, setEditMode] = useState(false);
   const [isDeleteMode, setDeleteMode] = useState(false);
+  const [snackBarOpen, setSnackBarOpen] = useState(false);
+  const [message, setMessage] = useState('');
   const [rowData, setRowData] = useState({
+    id: '',
     device: {
       serialNumber: '',
       description: '',
@@ -50,9 +69,10 @@ const Results = ({ className, ...rest }) => {
   });
 
   const GET_REPAIRS = gql`
-    query GetRepairs {
-      getRepairs {
+    query GetRepairs($pageSize: Int, $after: String, $keyword: String) {
+      getRepairs(pageSize: $pageSize, after: $after, keyword: $keyword) {
         hasMore
+        totalCount
         repairs {
           id
           status
@@ -73,7 +93,13 @@ const Results = ({ className, ...rest }) => {
     }
   `;
 
-  const { loading, error, data } = useQuery(GET_REPAIRS, {});
+  const { loading, error, data } = useQuery(GET_REPAIRS, {
+    variables: {
+      pageSize: limit,
+      after: (page * limit).toString(),
+      keyword: keyword
+    }
+  });
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
@@ -92,15 +118,55 @@ const Results = ({ className, ...rest }) => {
     setRowData(dataOfEditedRow);
   };
 
-  const handleRepairDelete = event => {
+  const handleRepairDelete = i => {
     setDeleteMode(true);
+    const dataOfDeleteRow = data.getRepairs.repairs.slice(0, limit)[i];
+    setRowData(dataOfDeleteRow);
   };
 
-  const handleEditClosed = () => setEditMode(false);
-  const handleRepairClosed = () => setDeleteMode(false);
+  const handleDialogClosed = args => {
+    setEditMode(false);
+    setDeleteMode(false);
+    if (args != null && args.confirmed === true) {
+      setMessage(args.message);
+      setSnackBarOpen(true);
+    }
+  };
+
+  const handleSearch = event => {
+    let searchQuery = event.target.value;
+
+    if (event.key === 'Enter') {
+      setkeyword(searchQuery);
+    }
+  };
 
   return (
     <Card className={clsx(classes.root, className)} {...rest}>
+      <Box mt={3}>
+        <Card>
+          <CardContent>
+            <Box maxWidth={500}>
+              <TextField
+                onKeyPress={handleSearch}
+                defaultValue={keyword}
+                fullWidth
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SvgIcon fontSize="small" color="action">
+                        <SearchIcon />
+                      </SvgIcon>
+                    </InputAdornment>
+                  )
+                }}
+                placeholder="Search"
+                variant="outlined"
+              />
+            </Box>
+          </CardContent>
+        </Card>
+      </Box>
       <PerfectScrollbar>
         <Box minWidth={1050}>
           <Table>
@@ -152,7 +218,7 @@ const Results = ({ className, ...rest }) => {
                   <TableCell padding="checkbox">
                     <IconButton
                       aria-label="delete"
-                      onClick={handleRepairDelete}
+                      onClick={e => handleRepairDelete(i)}
                     >
                       <DeleteIcon />
                     </IconButton>
@@ -162,13 +228,30 @@ const Results = ({ className, ...rest }) => {
             </TableBody>
           </Table>
         </Box>
-        <EditRepair
-          isEditMode={isEditMode}
-          handleClosed={handleEditClosed}
-          rowData={rowData}
-        />
-        <DeleteRepair isOpen={isDeleteMode} handleClosed={handleRepairClosed} />
+        {isEditMode ? (
+          <EditRepair
+            isEditMode={isEditMode}
+            handleClosed={handleDialogClosed}
+            rowData={rowData}
+          />
+        ) : null}
+        {isDeleteMode ? (
+          <DeleteRepair
+            isOpen={isDeleteMode}
+            rowData={rowData}
+            handleClosed={handleDialogClosed}
+          />
+        ) : null}
       </PerfectScrollbar>
+      <div className={classes.root}>
+        <Snackbar
+          open={snackBarOpen}
+          autoHideDuration={4000}
+          onClose={() => setSnackBarOpen(false)}
+        >
+          <Alert severity="success">{message}</Alert>
+        </Snackbar>
+      </div>
       <TablePagination
         component="div"
         count={data.getRepairs.repairs.length}

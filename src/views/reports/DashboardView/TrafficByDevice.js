@@ -89,7 +89,7 @@ const TrafficByDevice = ({ className, ...rest }) => {
 
   return (
     <Card className={clsx(classes.root, className)} {...rest}>
-      <CardHeader title="Repair Count by Device Type" />
+      <CardHeader title="Count by Device Type" />
       <Divider />
       <CardContent>
         <Box height={300} position="relative">

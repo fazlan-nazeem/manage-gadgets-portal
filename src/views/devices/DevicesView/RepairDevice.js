@@ -12,30 +12,7 @@ import {
   FormControl,
   MenuItem
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 import { useMutation, gql } from '@apollo/client';
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
-
-const useStyles = makeStyles(theme => ({
-  formControl: {
-    margin: theme.spacing(0),
-    minWidth: 120
-  },
-  selectEmpty: {
-    marginTop: theme.spacing(2)
-  },
-  root: {
-    width: '100%',
-    '& > * + *': {
-      marginTop: theme.spacing(2)
-    }
-  }
-}));
-
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
 
 const REPAIR_DEVICE = gql`
   mutation REPAIR_DEVICE($input: RepairInput) {
@@ -82,14 +59,12 @@ const GET_REPAIRS = gql`
 `;
 
 const RepairDevice = props => {
-  const classes = useStyles();
-  const isOpen = props.isOpen;
+  const isOpen = props.isRepairMode;
   let dataOfCurrentlySelectedRow = props.rowData;
   const [repairDescription, setRepairDescription] = useState('');
-  const [snackBarOpen, setSnackBarOpen] = useState(false);
   const deviceUuid = dataOfCurrentlySelectedRow.id;
 
-  const [confirmAddToRepair, { data }] = useMutation(REPAIR_DEVICE);
+  const [confirmAddToRepair] = useMutation(REPAIR_DEVICE);
 
   return (
     <div>
@@ -170,8 +145,10 @@ const RepairDevice = props => {
                 },
                 refetchQueries: [{ query: GET_REPAIRS }]
               });
-              setSnackBarOpen(true);
-              props.handleClosed();
+              props.handleClosed({
+                confirmed: true,
+                message: 'Successfully added device to repair!'
+              });
             }}
             color="primary"
           >
@@ -179,16 +156,6 @@ const RepairDevice = props => {
           </Button>
         </DialogActions>
       </Dialog>
-      <div className={classes.root}>
-        <Snackbar
-          open={snackBarOpen}
-          autoHideDuration={4000}
-          onClose={() => setSnackBarOpen(false)}
-        >
-          <Alert severity="success">Device successfuly added to repair!</Alert>
-        </Snackbar>
-      </div>
-      ;
     </div>
   );
 };

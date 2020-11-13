@@ -12,7 +12,8 @@ import {
   makeStyles,
   colors
 } from '@material-ui/core';
-import InsertChartIcon from '@material-ui/icons/InsertChartOutlined';
+
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -36,19 +37,16 @@ const TasksProgress = ({ className, ...rest }) => {
             <Typography color="textSecondary" gutterBottom variant="h6">
               TOTAL COMPLETED
             </Typography>
-            <Typography color="textPrimary" variant="h3">
+            <Typography color="textPrimary" variant="h1">
               55
             </Typography>
           </Grid>
           <Grid item>
             <Avatar className={classes.avatar}>
-              <InsertChartIcon />
+              <CheckCircleIcon />
             </Avatar>
           </Grid>
         </Grid>
-        <Box mt={3}>
-          <LinearProgress value={75.5} variant="determinate" />
-        </Box>
       </CardContent>
     </Card>
   );

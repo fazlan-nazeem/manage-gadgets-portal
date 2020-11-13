@@ -12,7 +12,7 @@ import {
   makeStyles
 } from '@material-ui/core';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
-import MoneyIcon from '@material-ui/icons/Money';
+import DeviceIcon from '@material-ui/icons/Devices';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -41,27 +41,18 @@ const Budget = ({ className, ...rest }) => {
         <Grid container justify="space-between" spacing={3}>
           <Grid item>
             <Typography color="textSecondary" gutterBottom variant="h6">
-              TOTAL PENDING
+              TOTAL ASSIGNED DEVICES
             </Typography>
-            <Typography color="textPrimary" variant="h3">
+            <Typography color="textPrimary" variant="h1">
               22
             </Typography>
           </Grid>
           <Grid item>
             <Avatar className={classes.avatar}>
-              <MoneyIcon />
+              <DeviceIcon />
             </Avatar>
           </Grid>
         </Grid>
-        <Box mt={2} display="flex" alignItems="center">
-          <ArrowDownwardIcon className={classes.differenceIcon} />
-          <Typography className={classes.differenceValue} variant="body2">
-            23
-          </Typography>
-          <Typography color="textSecondary" variant="caption">
-            New devices added this month
-          </Typography>
-        </Box>
       </CardContent>
     </Card>
   );

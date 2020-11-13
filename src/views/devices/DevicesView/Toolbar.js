@@ -4,39 +4,52 @@ import clsx from 'clsx';
 import {
   Box,
   Button,
-  Card,
-  CardContent,
-  TextField,
-  InputAdornment,
-  SvgIcon,
   makeStyles,
   IconButton,
   Tooltip
 } from '@material-ui/core';
-import { Search as SearchIcon } from 'react-feather';
 import { Upload as UploadIcon } from 'react-feather';
 import { Download as DownloadIcon } from 'react-feather';
 import AddDevice from './AddDevice';
 import ExportDeviceData from './ExportDeviceData';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles(theme => ({
-  root: {},
   importButton: {
     marginRight: theme.spacing(1)
   },
   exportButton: {
     marginRight: theme.spacing(1)
+  },
+  root: {
+    width: '100%',
+    '& > * + *': {
+      marginTop: theme.spacing(2)
+    }
   }
 }));
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const Toolbar = ({ className, ...rest }) => {
   const classes = useStyles();
 
   const [isAddDeviceOpen, handleAddDeviceOpen] = useState(false);
-  const handleAddDeviceClosed = () => handleAddDeviceOpen(false);
-
   const [isExportOpen, handlExportOpen] = useState(false);
   const handleExportClosed = () => handlExportOpen(false);
+  const [snackBarOpen, setSnackBarOpen] = useState(false);
+  const [message, setMessage] = useState('');
+
+  const handleDialogClosed = args => {
+    handleAddDeviceOpen(false);
+    if (args != null && args.confirmed === true) {
+      setMessage(args.message);
+      setSnackBarOpen(true);
+    }
+  };
 
   return (
     <div>
@@ -84,33 +97,17 @@ const Toolbar = ({ className, ...rest }) => {
             Add Device
           </Button>
         </Box>
-        <AddDevice
-          isOpen={isAddDeviceOpen}
-          handleClosed={handleAddDeviceClosed}
-        />
+        <AddDevice isOpen={isAddDeviceOpen} handleClosed={handleDialogClosed} />
 
-        <Box mt={3}>
-          <Card>
-            <CardContent>
-              <Box maxWidth={500}>
-                <TextField
-                  fullWidth
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SvgIcon fontSize="small" color="action">
-                          <SearchIcon />
-                        </SvgIcon>
-                      </InputAdornment>
-                    )
-                  }}
-                  placeholder="Search"
-                  variant="outlined"
-                />
-              </Box>
-            </CardContent>
-          </Card>
-        </Box>
+        <div className={classes.root}>
+          <Snackbar
+            open={snackBarOpen}
+            autoHideDuration={4000}
+            onClose={() => setSnackBarOpen(false)}
+          >
+            <Alert severity="success">{message}</Alert>
+          </Snackbar>
+        </div>
       </div>
     </div>
   );

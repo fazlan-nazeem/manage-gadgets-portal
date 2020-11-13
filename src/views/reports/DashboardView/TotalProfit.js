@@ -10,7 +10,7 @@ import {
   makeStyles,
   colors
 } from '@material-ui/core';
-import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -32,15 +32,15 @@ const TotalProfit = ({ className, ...rest }) => {
         <Grid container justify="space-between" spacing={3}>
           <Grid item>
             <Typography color="textSecondary" gutterBottom variant="h6">
-              TOTAL UNREPAIRABLE
+              TOTAL UNUSABLE
             </Typography>
-            <Typography color="textPrimary" variant="h3">
+            <Typography color="textPrimary" variant="h1">
               7
             </Typography>
           </Grid>
           <Grid item>
             <Avatar className={classes.avatar}>
-              <AttachMoneyIcon />
+              <DeleteIcon />
             </Avatar>
           </Grid>
         </Grid>

@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import {
   Avatar,
   Box,
-  Button,
   Divider,
   Drawer,
   Hidden,
@@ -12,17 +11,11 @@ import {
   Typography,
   makeStyles
 } from '@material-ui/core';
-import {
-  AlertCircle as AlertCircleIcon,
-  BarChart as BarChartIcon,
-  Lock as LockIcon,
-  Settings as SettingsIcon,
-  ShoppingBag as ShoppingBagIcon,
-  User as UserIcon,
-  UserPlus as UserPlusIcon,
-  Database as DatabaseIcon,
-  Activity as ActivityIcon
-} from 'react-feather';
+import { Lock as LockIcon, UserPlus as UserPlusIcon } from 'react-feather';
+import DeviceIcon from '@material-ui/icons/Devices';
+import BuildIcon from '@material-ui/icons/Build';
+import DashboardIcon from '@material-ui/icons/Dashboard';
+import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import NavItem from './NavItem';
 
 const user = {
@@ -34,28 +27,23 @@ const user = {
 const items = [
   {
     href: '/app/dashboard',
-    icon: BarChartIcon,
+    icon: DashboardIcon,
     title: 'Dashboard'
   },
   {
     href: '/app/devices',
-    icon: DatabaseIcon,
+    icon: DeviceIcon,
     title: 'Devices'
   },
   {
     href: '/app/repairs',
-    icon: ActivityIcon,
+    icon: BuildIcon,
     title: 'Repairs'
   },
   {
     href: '/app/account',
-    icon: UserIcon,
+    icon: AccountBoxIcon,
     title: 'Account'
-  },
-  {
-    href: '/app/settings',
-    icon: SettingsIcon,
-    title: 'Settings'
   },
   {
     href: '/login',
