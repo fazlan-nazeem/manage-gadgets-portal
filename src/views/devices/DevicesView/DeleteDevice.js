@@ -10,34 +10,23 @@ import {
 import { useMutation, gql } from '@apollo/client';
 
 const DELETE_DEVICE = gql`
-  mutation DeleteDevice($deviceId: ID!) {
-    deleteDevice(deviceId: $deviceId) {
-      id
-    }
-  }
-`;
-
-const GET_DEVICES = gql`
-  query GET_DEVICES {
-    getDevices(pageSize: 20) {
-      devices {
-        id
-        serialNumber
-        description
-        category
-        employee {
-          name
-          email
-          assignedTime
-        }
-      }
-    }
+  mutation deleteDevice($deviceId: ID!) {
+    deleteDevice(id: $deviceId)
   }
 `;
 
 const DeleteDevice = props => {
   const isOpen = props.isDeleteMode;
-  const [confirmDeleteDevice] = useMutation(DELETE_DEVICE);
+  const GET_DEVICES = props.getDevicesQuery;
+  const [confirmDeleteDevice] = useMutation(DELETE_DEVICE, {
+    onCompleted: () => {
+      props.handleClosed({
+        confirmed: true,
+        message: 'Successfully deleted device entry!'
+      });
+    }
+  });
+
   let dataOfCurrentlySelectedRow = props.rowData;
   const deviceId = dataOfCurrentlySelectedRow.id;
 
@@ -48,10 +37,6 @@ const DeleteDevice = props => {
       },
       refetchQueries: [{ query: GET_DEVICES }],
       awaitRefetchQueries: true
-    });
-    props.handleClosed({
-      confirmed: true,
-      message: 'Successfully deleted device entry!'
     });
   };
 

@@ -21,7 +21,6 @@ import {
   SvgIcon
 } from '@material-ui/core';
 import { Search as SearchIcon } from 'react-feather';
-import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import BugReportIcon from '@material-ui/icons/BugReport';
 import EditDevice from './EditDevice';
@@ -30,6 +29,7 @@ import RepairDevice from './RepairDevice';
 import { useQuery, gql } from '@apollo/client';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
+import MoreIcon from '@material-ui/icons/More';
 
 const useStyles = makeStyles(theme => ({
   avatar: {
@@ -58,27 +58,29 @@ const Results = ({ className, devices, ...rest }) => {
   const [isRepairMode, setRepairMode] = useState(false);
   const [snackBarOpen, setSnackBarOpen] = useState(false);
   const [message, setMessage] = useState('');
-  const [rowData, setRowData] = useState({
-    id: '',
-    serialNumber: '',
-    description: '',
-    employee: { name: '', email: '' },
-    category: ''
-  });
+  const [rowData, setRowData] = useState({});
 
   const GET_DEVICES = gql`
     query GET_DEVICES($pageSize: Int, $after: String, $keyword: String) {
       getDevices(pageSize: $pageSize, after: $after, keyword: $keyword) {
+        hasMore
         totalCount
         devices {
           id
           serialNumber
+          model
           description
-          category
-          employee {
+          vendor
+          deviceStatus
+          createdAt
+          updatedAt
+          warrantyExpiryDate
+          purchaseDate
+          deviceCategory {
+            id
             name
-            email
-            assignedTime
+            createdAt
+            updatedAt
           }
         }
       }
@@ -172,37 +174,33 @@ const Results = ({ className, devices, ...rest }) => {
             <TableHead>
               <TableRow>
                 <TableCell>Serial Number</TableCell>
-                <TableCell>Description</TableCell>
                 <TableCell>Category</TableCell>
-                <TableCell>Employee Name</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Assigned Date</TableCell>
+                <TableCell>Model</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>Added Date</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {data.getDevices.devices.slice(0, limit).map((entry, i) => (
                 <TableRow key={i}>
                   <TableCell>{entry.serialNumber}</TableCell>
-                  <TableCell>{entry.description}</TableCell>
-                  <TableCell>{entry.category}</TableCell>
-                  <TableCell>{entry.employee.name}</TableCell>
-                  <TableCell>{entry.employee.email}</TableCell>
-
+                  <TableCell>{entry.deviceCategory.name}</TableCell>
+                  <TableCell>{entry.model}</TableCell>
+                  <TableCell>{entry.deviceStatus}</TableCell>
                   <TableCell>
-                    {moment(entry.employee.assignedTime, 'x').format(
-                      'DD MMM YYYY hh:mm A'
-                    )}
+                    {moment(entry.createdAt, 'x').format('DD MMM YYYY hh:mm A')}
                   </TableCell>
                   <TableCell padding="checkbox">
-                    <Tooltip title="Edit entry">
+                    <Tooltip title="More info">
                       <IconButton
-                        aria-label="edit"
+                        aria-label="More info"
                         onClick={e => handleDeviceEdit(i)}
                       >
-                        <EditIcon />
+                        <MoreIcon />
                       </IconButton>
                     </Tooltip>
                   </TableCell>
+
                   <TableCell padding="checkbox">
                     <Tooltip title="Add to repair">
                       <IconButton
@@ -247,6 +245,7 @@ const Results = ({ className, devices, ...rest }) => {
             isDeleteMode={isDeleteMode}
             handleClosed={handleDialogClosed}
             rowData={rowData}
+            getDevicesQuery={GET_DEVICES}
           />
         ) : null}
         <div className={classes.root}>

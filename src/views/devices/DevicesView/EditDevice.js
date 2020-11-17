@@ -10,10 +10,16 @@ import {
   Select,
   InputLabel,
   FormControl,
-  MenuItem
+  MenuItem,
+  Grid
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { useMutation, gql } from '@apollo/client';
+import { useMutation, useQuery, gql } from '@apollo/client';
+import DateFnsUtils from '@date-io/date-fns';
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker
+} from '@material-ui/pickers';
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -21,7 +27,7 @@ const useStyles = makeStyles(theme => ({
     minWidth: 120
   },
   selectEmpty: {
-    marginTop: theme.spacing(2)
+    marginTop: theme.spacing(4)
   },
   root: {
     width: '100%',
@@ -35,31 +41,25 @@ const UPDATE_DEVICE = gql`
   mutation UPDATE_DEVICE($input: DeviceInput) {
     updateDevice(input: $input) {
       id
-      serialNumber
-      category
-      description
-      employee {
-        email
+      deviceCategory {
+        id
         name
-        assignedTime
       }
+      serialNumber
+      description
+      deviceStatus
+      vendor
+      createdAt
     }
   }
 `;
 
-const GET_DEVICES = gql`
-  query GET_DEVICES {
-    getDevices(pageSize: 20) {
-      devices {
+const GET_DEVICE_CATEGORIES = gql`
+  query GET_DEVICE_CATEGORIES {
+    getDeviceCategories(pageSize: 20) {
+      deviceCategories {
         id
-        serialNumber
-        description
-        category
-        employee {
-          name
-          email
-          assignedTime
-        }
+        name
       }
     }
   }
@@ -69,33 +69,38 @@ const EditDevice = props => {
   const classes = useStyles();
   const isOpen = props.isEditMode;
   let dataOfEditedRow = props.rowData;
-  const deviceUuid = dataOfEditedRow.id;
+  const id = dataOfEditedRow.id;
+  const { loading, error, data } = useQuery(GET_DEVICE_CATEGORIES);
   const [confirmUpdateDevice] = useMutation(UPDATE_DEVICE);
-
+  const [selectedDate, setSelectedDate] = React.useState(null);
   const [serialNumber, setSerialNumber] = useState(
     dataOfEditedRow.serialNumber
   );
   const [description, setDescription] = useState(dataOfEditedRow.description);
-  const [category, setCategory] = useState(dataOfEditedRow.category);
-  const [employeeName, setEmployeeName] = useState(
-    dataOfEditedRow.employee.name
+  const [model, setModel] = useState(dataOfEditedRow.model);
+  const [vendor, setVendor] = useState(dataOfEditedRow.vendor);
+  const [categoryId, setCategoryId] = useState(
+    dataOfEditedRow.deviceCategory.id
   );
-  const [employeeEmail, setEmployeeEmail] = useState(
-    dataOfEditedRow.employee.email
-  );
+
+  const handleDateChange = date => {
+    setSelectedDate(date);
+  };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error :(</p>;
 
   return (
     <div>
+      {console.log(data)}
       <Dialog
         open={isOpen}
         onClose={props.handleClosed}
         aria-labelledby="form-dialog-title"
       >
         <DialogTitle id="form-dialog-title">Edit Device Details</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Enter the relevant details about the device and the current owner
-          </DialogContentText>
+        <DialogContent dividers>
+          <DialogContentText>Device information</DialogContentText>
 
           <TextField
             autoFocus
@@ -104,6 +109,7 @@ const EditDevice = props => {
             defaultValue={dataOfEditedRow.serialNumber}
             fullWidth
             onChange={e => setSerialNumber(e.target.value)}
+            variant="outlined"
           />
           <TextField
             autoFocus
@@ -112,36 +118,93 @@ const EditDevice = props => {
             defaultValue={dataOfEditedRow.description}
             fullWidth
             onChange={e => setDescription(e.target.value)}
+            variant="outlined"
           />
-          <FormControl className={classes.formControl}>
-            <InputLabel>Category</InputLabel>
+          <FormControl variant="outlined" className={classes.formControl}>
+            <InputLabel margin="dense">Category</InputLabel>
             <Select
-              defaultValue={dataOfEditedRow.category}
-              onChange={e => setCategory(e.target.value)}
+              defaultValue={dataOfEditedRow.deviceCategory.id}
+              onChange={e => setCategoryId(e.target.value)}
             >
-              <MenuItem value={'LAPTOP'}>LAPTOP</MenuItem>
-              <MenuItem value={'MONITOR'}>MONITOR</MenuItem>
-              <MenuItem value={'MOBILE'}>MOBILE</MenuItem>
+              {data.getDeviceCategories.deviceCategories.map((entry, i) => (
+                <MenuItem key={i} value={entry.id}>
+                  {entry.name}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
           <TextField
             autoFocus
             margin="dense"
-            label="Employee name"
+            label="Model"
             fullWidth
-            defaultValue={dataOfEditedRow.employee.name}
-            onChange={e => setEmployeeName(e.target.value)}
+            defaultValue={dataOfEditedRow.model}
+            onChange={e => setModel(e.target.value)}
+            variant="outlined"
           />
           <TextField
             autoFocus
             margin="dense"
-            label="Email Address"
-            type="email"
+            label="Vendor"
             fullWidth
-            defaultValue={dataOfEditedRow.employee.email}
-            onChange={e => setEmployeeEmail(e.target.value)}
+            defaultValue={dataOfEditedRow.vendor}
+            onChange={e => setVendor(e.target.value)}
+            variant="outlined"
           />
         </DialogContent>
+
+        <DialogContent dividers>
+          <DialogContentText>Date information</DialogContentText>
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <Grid container justify="space-around">
+              <KeyboardDatePicker
+                disableToolbar
+                variant="outlined"
+                format="dd/MM/yyyy"
+                margin="normal"
+                id="date-picker-inline"
+                label="Purchase date"
+                value={selectedDate}
+                onChange={handleDateChange}
+                KeyboardButtonProps={{
+                  'aria-label': 'change date'
+                }}
+              />
+              <KeyboardDatePicker
+                margin="normal"
+                id="date-picker-dialog"
+                label="Warranty expiry date"
+                format="dd/MM/yyyy"
+                value={selectedDate}
+                onChange={handleDateChange}
+                KeyboardButtonProps={{
+                  'aria-label': 'change date'
+                }}
+              />
+            </Grid>
+          </MuiPickersUtilsProvider>
+        </DialogContent>
+        <DialogContent dividers>
+          <DialogContentText>Device usage information</DialogContentText>
+          <Grid container justify="space-around">
+            <TextField
+              autoFocus
+              margin="normal"
+              label="Current owner name"
+              defaultValue="Fazlan Nazeem"
+              variant="outlined"
+            />
+            <TextField
+              autoFocus
+              type="email"
+              margin="normal"
+              label="Current owner email"
+              defaultValue="fazlann@wso2.com"
+              variant="outlined"
+            />
+          </Grid>
+        </DialogContent>
+
         <DialogActions>
           <Button onClick={props.handleClosed} color="primary">
             Cancel
@@ -151,15 +214,14 @@ const EditDevice = props => {
               confirmUpdateDevice({
                 variables: {
                   input: {
-                    deviceUuid,
+                    id,
+                    categoryId,
                     serialNumber,
                     description,
-                    category,
-                    employeeName,
-                    employeeEmail
+                    model,
+                    vendor
                   }
-                },
-                refetchQueries: [{ query: GET_DEVICES }]
+                }
               });
 
               props.handleClosed({

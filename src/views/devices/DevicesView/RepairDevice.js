@@ -6,51 +6,38 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  TextField,
-  Select,
-  InputLabel,
-  FormControl,
-  MenuItem
+  TextField
 } from '@material-ui/core';
 import { useMutation, gql } from '@apollo/client';
 
 const REPAIR_DEVICE = gql`
   mutation REPAIR_DEVICE($input: RepairInput) {
     addRepair(input: $input) {
-      id
-      device {
-        serialNumber
-        category
-        description
-        employee {
-          email
-          name
-        }
-      }
-      createdDate
+      description
       status
-      repairDescription
+      agent
     }
   }
 `;
 
 const GET_REPAIRS = gql`
-  query GetRepairs {
+  query GET_REPAIRS {
     getRepairs {
       hasMore
+      totalCount
       repairs {
         id
         status
-        createdDate
-        repairDescription
+        description
+        agent
+        createdAt
         device {
           id
           serialNumber
-          category
+          model
           description
-          employee {
+          deviceCategory {
             name
-            email
           }
         }
       }
@@ -61,10 +48,20 @@ const GET_REPAIRS = gql`
 const RepairDevice = props => {
   const isOpen = props.isRepairMode;
   let dataOfCurrentlySelectedRow = props.rowData;
-  const [repairDescription, setRepairDescription] = useState('');
-  const deviceUuid = dataOfCurrentlySelectedRow.id;
+  const [description, setDescription] = useState('');
+  const [agent, setAgent] = useState('');
+  const deviceId = dataOfCurrentlySelectedRow.id;
 
-  const [confirmAddToRepair] = useMutation(REPAIR_DEVICE);
+  const [confirmAddToRepair, { loading, error, called, data }] = useMutation(
+    REPAIR_DEVICE
+  );
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error :(</p>;
+
+  if (!error && data) {
+    return null;
+  }
 
   return (
     <div>
@@ -81,7 +78,6 @@ const RepairDevice = props => {
           <TextField
             autoFocus
             margin="dense"
-            id="5"
             label="Serial Number"
             fullWidth
             defaultValue={dataOfCurrentlySelectedRow.serialNumber}
@@ -90,44 +86,36 @@ const RepairDevice = props => {
           <TextField
             autoFocus
             margin="dense"
-            label="Description"
+            label="Category"
             fullWidth
             defaultValue={dataOfCurrentlySelectedRow.description}
             disabled
           />
-          <FormControl disabled>
-            <InputLabel>Category</InputLabel>
-            <Select defaultValue={dataOfCurrentlySelectedRow.category}>
-              <MenuItem value={'LAPTOP'}>LAPTOP</MenuItem>
-              <MenuItem value={'MONITOR'}>MONITOR</MenuItem>
-              <MenuItem value={'MOBILE'}>MOBILE</MenuItem>
-            </Select>
-          </FormControl>
 
           <TextField
             autoFocus
             margin="dense"
-            label="Employee name"
+            label="Model"
             fullWidth
-            defaultValue={dataOfCurrentlySelectedRow.employee.name}
+            defaultValue={dataOfCurrentlySelectedRow.model}
             disabled
           />
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Email Address"
-            type="email"
-            fullWidth
-            defaultValue={dataOfCurrentlySelectedRow.employee.email}
-            disabled
-          />
+
           <TextField
             autoFocus
             margin="dense"
             label="Remarks"
             fullWidth
             placeholder="Describe the issue"
-            onChange={e => setRepairDescription(e.target.value)}
+            onChange={e => setDescription(e.target.value)}
+          />
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Agent"
+            fullWidth
+            placeholder="Specify the repair agent"
+            onChange={e => setAgent(e.target.value)}
           />
         </DialogContent>
         <DialogActions>
@@ -139,15 +127,13 @@ const RepairDevice = props => {
               confirmAddToRepair({
                 variables: {
                   input: {
-                    repairDescription,
-                    deviceUuid
+                    deviceId,
+                    description,
+                    agent
                   }
                 },
-                refetchQueries: [{ query: GET_REPAIRS }]
-              });
-              props.handleClosed({
-                confirmed: true,
-                message: 'Successfully added device to repair!'
+                refetchQueries: [{ query: GET_REPAIRS }],
+                awaitRefetchQueries: true
               });
             }}
             color="primary"

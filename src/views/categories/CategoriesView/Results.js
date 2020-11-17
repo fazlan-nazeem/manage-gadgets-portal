@@ -14,20 +14,20 @@ import {
   TableRow,
   makeStyles,
   IconButton,
-  Button,
+  Tooltip,
   CardContent,
   TextField,
   InputAdornment,
   SvgIcon
 } from '@material-ui/core';
 import { Search as SearchIcon } from 'react-feather';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditRepair from './EditRepair';
-import DeleteRepair from './DeleteRepair';
 import { useQuery, gql } from '@apollo/client';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
+import DeleteCategory from './DeleteCategory';
+import EditCategory from './EditCategory';
 
 const useStyles = makeStyles(theme => ({
   avatar: {
@@ -45,53 +45,37 @@ function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-const Results = ({ className, ...rest }) => {
+const GET_DEVICE_CATEGORIES = gql`
+  query GET_DEVICE_CATEGORIES(
+    $pageSize: Int
+    $after: String
+    $keyword: String
+  ) {
+    getDeviceCategories(pageSize: $pageSize, after: $after, keyword: $keyword) {
+      hasMore
+      totalCount
+      deviceCategories {
+        id
+        name
+        createdAt
+      }
+    }
+  }
+`;
+
+const Results = ({ className, devices, ...rest }) => {
   const classes = useStyles();
 
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(0);
   const [keyword, setkeyword] = useState('');
-  const [isEditMode, setEditMode] = useState(false);
   const [isDeleteMode, setDeleteMode] = useState(false);
   const [snackBarOpen, setSnackBarOpen] = useState(false);
   const [message, setMessage] = useState('');
+  const [isEditMode, setEditMode] = useState(false);
+  const { loading, error, data } = useQuery(GET_DEVICE_CATEGORIES);
+
   const [rowData, setRowData] = useState({});
-
-  const GET_REPAIRS = gql`
-    query GET_REPAIRS($pageSize: Int, $after: String, $keyword: String) {
-      getRepairs(pageSize: $pageSize, after: $after, keyword: $keyword) {
-        hasMore
-        totalCount
-        repairs {
-          id
-          status
-          description
-          agent
-          createdAt
-          device {
-            id
-            serialNumber
-            model
-            description
-            deviceCategory {
-              name
-            }
-          }
-        }
-      }
-    }
-  `;
-
-  const { loading, error, data } = useQuery(GET_REPAIRS, {
-    variables: {
-      pageSize: limit,
-      after: (page * limit).toString(),
-      keyword: keyword
-    }
-  });
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error :(</p>;
 
   const handleLimitChange = event => {
     setLimit(event.target.value);
@@ -99,18 +83,6 @@ const Results = ({ className, ...rest }) => {
 
   const handlePageChange = (event, newPage) => {
     setPage(newPage);
-  };
-
-  const handleRepairEdit = i => {
-    setEditMode(true);
-    const dataOfEditedRow = data.getRepairs.repairs.slice(0, limit)[i];
-    setRowData(dataOfEditedRow);
-  };
-
-  const handleRepairDelete = i => {
-    setDeleteMode(true);
-    const dataOfDeleteRow = data.getRepairs.repairs.slice(0, limit)[i];
-    setRowData(dataOfDeleteRow);
   };
 
   const handleDialogClosed = args => {
@@ -122,6 +94,24 @@ const Results = ({ className, ...rest }) => {
     }
   };
 
+  const handleDeviceCategoryDelete = i => {
+    setDeleteMode(true);
+    const dataOfSelectedRow = data.getDeviceCategories.deviceCategories.slice(
+      0,
+      limit
+    )[i];
+    setRowData(dataOfSelectedRow);
+  };
+
+  const handleDeviceCategoryEdit = i => {
+    setEditMode(true);
+    const dataOfEditedRow = data.getDeviceCategories.deviceCategories.slice(
+      0,
+      limit
+    )[i];
+    setRowData(dataOfEditedRow);
+  };
+
   const handleSearch = event => {
     let searchQuery = event.target.value;
 
@@ -129,6 +119,9 @@ const Results = ({ className, ...rest }) => {
       setkeyword(searchQuery);
     }
   };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error :(</p>;
 
   return (
     <Card className={clsx(classes.root, className)} {...rest}>
@@ -161,71 +154,59 @@ const Results = ({ className, ...rest }) => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Serial Number</TableCell>
-                <TableCell>Model</TableCell>
-                <TableCell>Category</TableCell>
-                <TableCell>Remarks</TableCell>
-                <TableCell>Agent</TableCell>
-                <TableCell>Status</TableCell>
+                <TableCell>Name</TableCell>
 
-                <TableCell>Date</TableCell>
+                <TableCell>Added Date</TableCell>
               </TableRow>
             </TableHead>
+
             <TableBody>
-              {data.getRepairs.repairs.slice(0, limit).map((entry, i) => (
-                <TableRow key={i}>
-                  <TableCell>{entry.device.serialNumber}</TableCell>
-                  <TableCell>{entry.device.model}</TableCell>
-                  <TableCell>{entry.device.deviceCategory.name}</TableCell>
-                  <TableCell>{entry.description}</TableCell>
-                  <TableCell>{entry.agent}</TableCell>
-                  <TableCell>
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      color="primary"
-                      className={classes.margin}
-                    >
-                      {entry.status}
-                    </Button>
-                  </TableCell>
-                  <TableCell>
-                    {moment(entry.createdAt, 'x').format('DD MMM YYYY hh:mm A')}
-                  </TableCell>
-                  <TableCell padding="checkbox">
-                    <IconButton
-                      aria-label="edit"
-                      onClick={e => handleRepairEdit(i)}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                  </TableCell>
-                  <TableCell padding="checkbox">
-                    <IconButton
-                      aria-label="delete"
-                      onClick={e => handleRepairDelete(i)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {data.getDeviceCategories.deviceCategories
+                .slice(0, limit)
+                .map((entry, i) => (
+                  <TableRow key={i}>
+                    <TableCell>{entry.name}</TableCell>
+                    <TableCell>
+                      {moment(entry.createdAt, 'x').format(
+                        'DD MMM YYYY hh:mm A'
+                      )}
+                    </TableCell>
+                    <TableCell padding="checkbox">
+                      <IconButton
+                        aria-label="edit"
+                        onClick={e => handleDeviceCategoryEdit(i)}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                    </TableCell>
+                    <TableCell padding="checkbox">
+                      <Tooltip title="Delete entry">
+                        <IconButton
+                          aria-label="delete"
+                          onClick={e => handleDeviceCategoryDelete(i)}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         </Box>
         {isEditMode ? (
-          <EditRepair
+          <EditCategory
             isEditMode={isEditMode}
             handleClosed={handleDialogClosed}
             rowData={rowData}
           />
         ) : null}
         {isDeleteMode ? (
-          <DeleteRepair
+          <DeleteCategory
             isOpen={isDeleteMode}
             rowData={rowData}
             handleClosed={handleDialogClosed}
-            getRepairsQuery={GET_REPAIRS}
+            getDeviceCategoriesQuery={GET_DEVICE_CATEGORIES}
           />
         ) : null}
       </PerfectScrollbar>
@@ -240,7 +221,7 @@ const Results = ({ className, ...rest }) => {
       </div>
       <TablePagination
         component="div"
-        count={data.getRepairs.totalCount}
+        count={data.getDeviceCategories.totalCount}
         onChangePage={handlePageChange}
         onChangeRowsPerPage={handleLimitChange}
         page={page}
@@ -249,10 +230,6 @@ const Results = ({ className, ...rest }) => {
       />
     </Card>
   );
-};
-
-Results.propTypes = {
-  className: PropTypes.string
 };
 
 export default Results;

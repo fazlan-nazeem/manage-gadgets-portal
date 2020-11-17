@@ -13,7 +13,7 @@ import {
   MenuItem
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { useMutation, gql } from '@apollo/client';
+import { useMutation, useQuery, gql } from '@apollo/client';
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -29,11 +29,19 @@ const ADD_DEVICE = gql`
   mutation ADD_DEVICE($input: DeviceInput) {
     addDevice(input: $input) {
       serialNumber
+      model
       description
-      category
-      employee {
+      vendor
+    }
+  }
+`;
+
+const GET_DEVICE_CATEGORIES = gql`
+  query GET_DEVICE_CATEGORIES {
+    getDeviceCategories(pageSize: 20) {
+      deviceCategories {
+        id
         name
-        email
       }
     }
   }
@@ -41,17 +49,25 @@ const ADD_DEVICE = gql`
 
 const GET_DEVICES = gql`
   query GET_DEVICES {
-    getDevices(pageSize: 25) {
+    getDevices {
+      hasMore
       totalCount
       devices {
         id
         serialNumber
+        model
         description
-        category
-        employee {
+        vendor
+        deviceStatus
+        createdAt
+        updatedAt
+        warrantyExpiryDate
+        purchaseDate
+        deviceCategory {
+          id
           name
-          email
-          assignedTime
+          createdAt
+          updatedAt
         }
       }
     }
@@ -62,13 +78,25 @@ const AddDevice = props => {
   const classes = useStyles();
   const isOpen = props.isOpen;
 
-  const [confirmAddDevice] = useMutation(ADD_DEVICE);
+  const { loading, error, data } = useQuery(GET_DEVICE_CATEGORIES);
+  const [confirmAddDevice] = useMutation(ADD_DEVICE, {
+    onCompleted: () => {
+      props.handleClosed({
+        confirmed: true,
+        message: 'Successfully added device entry!'
+      });
+    }
+  });
 
   const [serialNumber, setSerialNumber] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('');
-  const [employeeName, setEmployeeName] = useState('');
-  const [employeeEmail, setEmployeeEmail] = useState('');
+  const [model, setModel] = useState('');
+
+  const [vendor, setVendor] = useState('');
+  const [categoryId, setCategoryId] = useState('');
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error :(</p>;
 
   return (
     <div>
@@ -85,7 +113,6 @@ const AddDevice = props => {
           <TextField
             autoFocus
             margin="dense"
-            id="5"
             label="Serial Number"
             fullWidth
             onChange={e => setSerialNumber(e.target.value)}
@@ -93,39 +120,33 @@ const AddDevice = props => {
           <TextField
             autoFocus
             margin="dense"
-            id="4"
             label="Description"
             fullWidth
             onChange={e => setDescription(e.target.value)}
           />
-          <FormControl className={classes.formControl}>
-            <InputLabel id="demo-simple-select-label">Category</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="3"
-              onChange={event => setCategory(event.target.value)}
-            >
-              <MenuItem value={'LAPTOP'}>LAPTOP</MenuItem>
-              <MenuItem value={'MONITOR'}>MONITOR</MenuItem>
-              <MenuItem value={'MOBILE'}>MOBILE</MenuItem>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Model"
+            fullWidth
+            onChange={e => setModel(e.target.value)}
+          />
+          <FormControl variant="outlined" className={classes.formControl}>
+            <InputLabel margin="dense">Category</InputLabel>
+            <Select onChange={e => setCategoryId(e.target.value)}>
+              {data.getDeviceCategories.deviceCategories.map((entry, i) => (
+                <MenuItem key={i} value={entry.id}>
+                  {entry.name}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
           <TextField
             autoFocus
             margin="dense"
-            id="1"
-            label="Employee name"
+            label="Vendor"
             fullWidth
-            onChange={e => setEmployeeName(e.target.value)}
-          />
-          <TextField
-            autoFocus
-            margin="dense"
-            id="2"
-            label="Email Address"
-            type="email"
-            fullWidth
-            onChange={e => setEmployeeEmail(e.target.value)}
+            onChange={e => setVendor(e.target.value)}
           />
         </DialogContent>
         <DialogActions>
@@ -138,18 +159,14 @@ const AddDevice = props => {
                 variables: {
                   input: {
                     serialNumber,
+                    categoryId,
+                    model,
                     description,
-                    category,
-                    employeeName,
-                    employeeEmail
+                    vendor
                   }
                 },
-                refetchQueries: [{ query: GET_DEVICES }]
-              });
-
-              props.handleClosed({
-                confirmed: true,
-                message: 'Successfully added device entry!'
+                refetchQueries: [{ query: GET_DEVICES }],
+                awaitRefetchQueries: true
               });
             }}
             color="primary"

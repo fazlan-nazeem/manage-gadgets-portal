@@ -16,6 +16,7 @@ import DeviceIcon from '@material-ui/icons/Devices';
 import BuildIcon from '@material-ui/icons/Build';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
+import CategoryIcon from '@material-ui/icons/Category';
 import NavItem from './NavItem';
 
 const user = {
@@ -39,6 +40,11 @@ const items = [
     href: '/app/repairs',
     icon: BuildIcon,
     title: 'Repairs'
+  },
+  {
+    href: '/app/categories',
+    icon: CategoryIcon,
+    title: 'Categories'
   },
   {
     href: '/app/account',

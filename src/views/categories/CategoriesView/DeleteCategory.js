@@ -9,22 +9,23 @@ import {
 } from '@material-ui/core';
 import { useMutation, gql } from '@apollo/client';
 
-const DELETE_REPAIR = gql`
-  mutation DeleteRepair($id: ID!) {
-    deleteRepair(id: $id)
+const DELETE_DEVICE_CATEGORY = gql`
+  mutation DeleteDeviceCategory($id: ID!) {
+    deleteDeviceCategory(id: $id)
   }
 `;
 
-const DeleteRepair = props => {
+const DeleteDeviceCategory = props => {
   const isOpen = props.isOpen;
   let dataOfCurrentlySelectedRow = props.rowData;
   const id = dataOfCurrentlySelectedRow.id;
-  const GET_REPAIRS = props.getRepairsQuery;
-  const [confirmDeleteRepair] = useMutation(DELETE_REPAIR, {
+  const GET_DEVICE_CATEGORIES = props.getDeviceCategoriesQuery;
+
+  const [confirmDeleteCategory] = useMutation(DELETE_DEVICE_CATEGORY, {
     onCompleted: () => {
       props.handleClosed({
         confirmed: true,
-        message: 'Successfully deleted repair entry!'
+        message: 'Successfully deleted category!'
       });
     }
   });
@@ -48,11 +49,11 @@ const DeleteRepair = props => {
         <DialogActions>
           <Button
             onClick={e => {
-              confirmDeleteRepair({
+              confirmDeleteCategory({
                 variables: {
                   id
                 },
-                refetchQueries: [{ query: GET_REPAIRS }],
+                refetchQueries: [{ query: GET_DEVICE_CATEGORIES }],
                 awaitRefetchQueries: true
               });
             }}
@@ -69,4 +70,4 @@ const DeleteRepair = props => {
   );
 };
 
-export default DeleteRepair;
+export default DeleteDeviceCategory;

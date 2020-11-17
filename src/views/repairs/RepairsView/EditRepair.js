@@ -31,40 +31,16 @@ const UPDATE_REPAIR = gql`
       id
       device {
         serialNumber
-        category
+        model
         description
-        employee {
-          email
+        deviceCategory {
           name
         }
       }
-      createdDate
+      createdAt
       status
-      repairDescription
-    }
-  }
-`;
-
-const GET_REPAIRS = gql`
-  query GetRepairs {
-    getRepairs {
-      hasMore
-      repairs {
-        id
-        status
-        createdDate
-        repairDescription
-        device {
-          id
-          serialNumber
-          category
-          description
-          employee {
-            name
-            email
-          }
-        }
-      }
+      description
+      agent
     }
   }
 `;
@@ -73,12 +49,11 @@ const EditRepair = props => {
   const classes = useStyles();
   const isOpen = props.isEditMode;
   let dataOfEditedRow = props.rowData;
-  const repairUuid = dataOfEditedRow.id;
+  const id = dataOfEditedRow.id;
 
-  const [repairDescription, setRepairDescription] = useState(
-    dataOfEditedRow.repairDescription
-  );
-  const [repairStatus, setRepairStatus] = useState(dataOfEditedRow.status);
+  const [description, setDescription] = useState(dataOfEditedRow.description);
+  const [status, setStatus] = useState(dataOfEditedRow.status);
+  const [agent, setAgent] = useState(dataOfEditedRow.agent);
 
   const [confirmUpdateRepair] = useMutation(UPDATE_REPAIR);
 
@@ -105,50 +80,42 @@ const EditRepair = props => {
           <TextField
             autoFocus
             margin="dense"
-            label="Description"
+            label="Model"
             fullWidth
-            defaultValue={dataOfEditedRow.device.description}
+            defaultValue={dataOfEditedRow.device.model}
             disabled
           />
-          <FormControl className={classes.formControl}>
-            <InputLabel>Category</InputLabel>
-            <Select defaultValue={dataOfEditedRow.device.category} disabled>
-              <MenuItem value={'LAPTOP'}>LAPTOP</MenuItem>
-              <MenuItem value={'MONITOR'}>MONITOR</MenuItem>
-              <MenuItem value={'MOBILE'}>MOBILE</MenuItem>
-            </Select>
-          </FormControl>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Category"
+            fullWidth
+            defaultValue={dataOfEditedRow.device.deviceCategory.name}
+            disabled
+          />
+
           <TextField
             autoFocus
             margin="dense"
             label="Remarks"
             fullWidth
-            defaultValue={dataOfEditedRow.repairDescription}
-            onChange={e => setRepairDescription(e.target.value)}
+            defaultValue={dataOfEditedRow.description}
+            onChange={e => setDescription(e.target.value)}
           />
           <TextField
             autoFocus
             margin="dense"
-            label="Employee name"
+            label="Agent"
             fullWidth
-            defaultValue={dataOfEditedRow.device.employee.name}
-            disabled
-          />
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Email Address"
-            type="email"
-            fullWidth
-            defaultValue={dataOfEditedRow.device.employee.email}
-            disabled
+            defaultValue={dataOfEditedRow.agent}
+            onChange={e => setAgent(e.target.value)}
           />
 
           <FormControl className={classes.formControl}>
             <InputLabel>Status</InputLabel>
             <Select
               defaultValue={dataOfEditedRow.status}
-              onChange={e => setRepairStatus(e.target.value)}
+              onChange={e => setStatus(e.target.value)}
             >
               <MenuItem value={'PENDING'}>PENDING</MenuItem>
               <MenuItem value={'IN_PROGRESS'}>IN_PROGRESS</MenuItem>
@@ -165,12 +132,12 @@ const EditRepair = props => {
               confirmUpdateRepair({
                 variables: {
                   input: {
-                    repairUuid,
-                    repairDescription,
-                    repairStatus
+                    id,
+                    status,
+                    description,
+                    agent
                   }
-                },
-                refetchQueries: [{ query: GET_REPAIRS }]
+                }
               });
               props.handleClosed({
                 confirmed: true,
