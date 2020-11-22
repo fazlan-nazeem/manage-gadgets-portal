@@ -52,7 +52,7 @@ const RepairDevice = props => {
   const [agent, setAgent] = useState('');
   const deviceId = dataOfCurrentlySelectedRow.id;
 
-  const [confirmAddToRepair, { loading, error, called, data }] = useMutation(
+  const [confirmAddToRepair, { loading, error, data }] = useMutation(
     REPAIR_DEVICE
   );
 

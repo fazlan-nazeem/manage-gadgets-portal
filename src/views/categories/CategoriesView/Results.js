@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import clsx from 'clsx';
-import PropTypes from 'prop-types';
 import moment from 'moment';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import {
@@ -28,6 +27,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import DeleteCategory from './DeleteCategory';
 import EditCategory from './EditCategory';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const useStyles = makeStyles(theme => ({
   avatar: {
@@ -73,7 +73,9 @@ const Results = ({ className, devices, ...rest }) => {
   const [snackBarOpen, setSnackBarOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [isEditMode, setEditMode] = useState(false);
-  const { loading, error, data } = useQuery(GET_DEVICE_CATEGORIES);
+  const { loading, error, data } = useQuery(GET_DEVICE_CATEGORIES, {
+    fetchPolicy: 'network-only'
+  });
 
   const [rowData, setRowData] = useState({});
 
@@ -120,7 +122,7 @@ const Results = ({ className, devices, ...rest }) => {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <CircularProgress />;
   if (error) return <p>Error :(</p>;
 
   return (

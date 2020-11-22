@@ -28,6 +28,7 @@ import DeleteRepair from './DeleteRepair';
 import { useQuery, gql } from '@apollo/client';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const useStyles = makeStyles(theme => ({
   avatar: {
@@ -87,10 +88,11 @@ const Results = ({ className, ...rest }) => {
       pageSize: limit,
       after: (page * limit).toString(),
       keyword: keyword
-    }
+    },
+    fetchPolicy: 'network-only'
   });
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <CircularProgress />;
   if (error) return <p>Error :(</p>;
 
   const handleLimitChange = event => {

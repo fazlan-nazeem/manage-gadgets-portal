@@ -23,13 +23,14 @@ import {
 import { Search as SearchIcon } from 'react-feather';
 import DeleteIcon from '@material-ui/icons/Delete';
 import BugReportIcon from '@material-ui/icons/BugReport';
-import EditDevice from './EditDevice';
 import DeleteDevice from './DeleteDevice';
 import RepairDevice from './RepairDevice';
 import { useQuery, gql } from '@apollo/client';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import MoreIcon from '@material-ui/icons/More';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   avatar: {
@@ -53,7 +54,6 @@ const Results = ({ className, devices, ...rest }) => {
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(0);
   const [keyword, setkeyword] = useState('');
-  const [isEditMode, setEditMode] = useState(false);
   const [isDeleteMode, setDeleteMode] = useState(false);
   const [isRepairMode, setRepairMode] = useState(false);
   const [snackBarOpen, setSnackBarOpen] = useState(false);
@@ -95,12 +95,6 @@ const Results = ({ className, devices, ...rest }) => {
     setPage(newPage);
   };
 
-  const handleDeviceEdit = i => {
-    setEditMode(true);
-    const dataOfSelectedRow = data.getDevices.devices.slice(0, limit)[i];
-    setRowData(dataOfSelectedRow);
-  };
-
   const handleDeviceRepair = i => {
     setRepairMode(true);
     const dataOfSelectedRow = data.getDevices.devices.slice(0, limit)[i];
@@ -118,14 +112,14 @@ const Results = ({ className, devices, ...rest }) => {
       pageSize: limit,
       after: (page * limit).toString(),
       keyword: keyword
-    }
+    },
+    fetchPolicy: 'network-only'
   });
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <CircularProgress />;
   if (error) return <p>Error :(</p>;
 
   const handleDialogClosed = args => {
-    setEditMode(false);
     setDeleteMode(false);
     setRepairMode(false);
     if (args != null && args.confirmed === true) {
@@ -191,14 +185,13 @@ const Results = ({ className, devices, ...rest }) => {
                     {moment(entry.createdAt, 'x').format('DD MMM YYYY hh:mm A')}
                   </TableCell>
                   <TableCell padding="checkbox">
-                    <Tooltip title="More info">
-                      <IconButton
-                        aria-label="More info"
-                        onClick={e => handleDeviceEdit(i)}
-                      >
-                        <MoreIcon />
-                      </IconButton>
-                    </Tooltip>
+                    <Link to={`${entry.id}`}>
+                      <Tooltip title="More info">
+                        <IconButton aria-label="More info">
+                          <MoreIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </Link>
                   </TableCell>
 
                   <TableCell padding="checkbox">
@@ -226,13 +219,14 @@ const Results = ({ className, devices, ...rest }) => {
             </TableBody>
           </Table>
         </Box>
-        {isEditMode ? (
-          <EditDevice
-            isEditMode={isEditMode}
-            handleClosed={handleDialogClosed}
-            rowData={rowData}
-          />
-        ) : null}
+        {/* {isEditMode ? (
+          // <EditDevice
+          //   isEditMode={isEditMode}
+          //   handleClosed={handleDialogClosed}
+          //   rowData={rowData}
+          // />
+       
+        ) : null} */}
         {isRepairMode ? (
           <RepairDevice
             isRepairMode={isRepairMode}

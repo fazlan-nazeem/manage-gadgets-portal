@@ -4,7 +4,6 @@ import clsx from 'clsx';
 import { Box, Button, makeStyles } from '@material-ui/core';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
-import AddCategory from './AddCategory';
 
 const useStyles = makeStyles(theme => ({
   importButton: {
@@ -27,18 +26,8 @@ function Alert(props) {
 
 const Toolbar = ({ className, ...rest }) => {
   const classes = useStyles();
-
-  const [isAddCategoryOpen, handleAddCategoryOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [snackBarOpen, setSnackBarOpen] = useState(false);
-
-  const handleDialogClosed = args => {
-    handleAddCategoryOpen(false);
-    if (args != null && args.confirmed === true) {
-      setMessage(args.message);
-      setSnackBarOpen(true);
-    }
-  };
 
   return (
     <div>
@@ -49,16 +38,11 @@ const Toolbar = ({ className, ...rest }) => {
             className={classes.margin}
             variant="contained"
             size="large"
-            onClick={() => handleAddCategoryOpen(true)}
           >
-            Add Category
+            Update Entry
           </Button>
         </Box>
       </div>
-      <AddCategory
-        isOpen={isAddCategoryOpen}
-        handleClosed={handleDialogClosed}
-      />
 
       <div className={classes.root}>
         <Snackbar

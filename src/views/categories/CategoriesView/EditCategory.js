@@ -8,18 +8,8 @@ import {
   DialogTitle,
   TextField
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { useMutation, gql } from '@apollo/client';
 
-const useStyles = makeStyles(theme => ({
-  formControl: {
-    margin: theme.spacing(0),
-    minWidth: 120
-  },
-  selectEmpty: {
-    marginTop: theme.spacing(2)
-  }
-}));
+import { useMutation, gql } from '@apollo/client';
 
 const UPDATE_DEVICE_CATEGORY = gql`
   mutation UPDATE_DEVICE_CATEGORY($id: ID!, $name: String!) {
@@ -33,7 +23,6 @@ const UPDATE_DEVICE_CATEGORY = gql`
 `;
 
 const EditCategory = props => {
-  const classes = useStyles();
   const isOpen = props.isEditMode;
   let dataOfEditedRow = props.rowData;
   const id = dataOfEditedRow.id;

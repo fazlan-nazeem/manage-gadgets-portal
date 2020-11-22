@@ -11,20 +11,9 @@ import RegisterView from 'src/views/auth/RegisterView';
 import RepairsView from 'src/views/repairs/RepairsView';
 import DevicesView from 'src/views/devices/DevicesView';
 import CategoriesView from 'src/views/categories/CategoriesView';
+import DevicesDetailedView from 'src/views/devices/DetailedView';
 
 const routes = [
-  {
-    path: 'app',
-    element: <DashboardLayout />,
-    children: [
-      { path: 'account', element: <AccountView /> },
-      { path: 'dashboard', element: <DashboardView /> },
-      { path: 'repairs', element: <RepairsView /> },
-      { path: 'devices', element: <DevicesView /> },
-      { path: 'categories', element: <CategoriesView /> },
-      { path: '*', element: <Navigate to="/404" /> }
-    ]
-  },
   {
     path: '/',
     element: <MainLayout />,
@@ -33,6 +22,19 @@ const routes = [
       { path: 'register', element: <RegisterView /> },
       { path: '404', element: <NotFoundView /> },
       { path: '/', element: <Navigate to="/app/dashboard" /> },
+      { path: '*', element: <Navigate to="/404" /> }
+    ]
+  },
+  {
+    path: 'app',
+    element: <DashboardLayout />,
+    children: [
+      { path: 'account', element: <AccountView /> },
+      { path: 'dashboard', element: <DashboardView /> },
+      { path: 'repairs', element: <RepairsView /> },
+      { path: 'devices/:id', element: <DevicesDetailedView /> },
+      { path: 'devices', element: <DevicesView /> },
+      { path: 'categories', element: <CategoriesView /> },
       { path: '*', element: <Navigate to="/404" /> }
     ]
   }

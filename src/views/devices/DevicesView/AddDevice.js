@@ -8,12 +8,13 @@ import {
   DialogTitle,
   TextField,
   Select,
-  InputLabel,
+  FormHelperText,
   FormControl,
   MenuItem
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useMutation, useQuery, gql } from '@apollo/client';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -22,6 +23,9 @@ const useStyles = makeStyles(theme => ({
   },
   selectEmpty: {
     marginTop: theme.spacing(2)
+  },
+  select: {
+    marginTop: theme.spacing(1)
   }
 }));
 
@@ -95,7 +99,7 @@ const AddDevice = props => {
   const [vendor, setVendor] = useState('');
   const [categoryId, setCategoryId] = useState('');
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <CircularProgress />;
   if (error) return <p>Error :(</p>;
 
   return (
@@ -131,15 +135,23 @@ const AddDevice = props => {
             fullWidth
             onChange={e => setModel(e.target.value)}
           />
-          <FormControl variant="outlined" className={classes.formControl}>
-            <InputLabel margin="dense">Category</InputLabel>
-            <Select onChange={e => setCategoryId(e.target.value)}>
+          <FormControl className={classes.formControl}>
+            <Select
+              onChange={e => setCategoryId(e.target.value)}
+              inputProps={{ 'aria-label': 'Without label' }}
+              displayEmpty
+              className={classes.select}
+            >
+              <MenuItem value="" disabled>
+                Category
+              </MenuItem>
               {data.getDeviceCategories.deviceCategories.map((entry, i) => (
                 <MenuItem key={i} value={entry.id}>
                   {entry.name}
                 </MenuItem>
               ))}
             </Select>
+            <FormHelperText>Category</FormHelperText>
           </FormControl>
           <TextField
             autoFocus
