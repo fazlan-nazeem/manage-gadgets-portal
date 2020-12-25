@@ -62,17 +62,7 @@ const Toolbar = ({ className, ...rest }) => {
             type="file"
             hidden
           />
-          <Tooltip title="Upload Data">
-            <label htmlFor="icon-button-file">
-              <IconButton
-                color="primary"
-                className={classes.button}
-                component="span"
-              >
-                <UploadIcon />
-              </IconButton>
-            </label>
-          </Tooltip>
+
           <Tooltip title="Download Data">
             <label>
               <IconButton

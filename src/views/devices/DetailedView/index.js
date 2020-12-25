@@ -5,7 +5,6 @@ import Result from './Result';
 import { useParams } from 'react-router-dom';
 import { useQuery, gql } from '@apollo/client';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Toolbar from './Toolbar';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -55,7 +54,6 @@ const DeviceDetailedView = props => {
   return (
     <Page className={classes.root} title="Devices Info">
       <Container maxWidth={false}>
-        <Toolbar />
         <Box mt={3}>
           <Result data={data}></Result>
         </Box>

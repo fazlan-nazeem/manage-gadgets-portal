@@ -23,6 +23,7 @@ import {
 import { Search as SearchIcon } from 'react-feather';
 import DeleteIcon from '@material-ui/icons/Delete';
 import BugReportIcon from '@material-ui/icons/BugReport';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import DeleteDevice from './DeleteDevice';
 import RepairDevice from './RepairDevice';
 import { useQuery, gql } from '@apollo/client';
@@ -31,6 +32,7 @@ import MuiAlert from '@material-ui/lab/Alert';
 import MoreIcon from '@material-ui/icons/More';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Link } from 'react-router-dom';
+import AssignmentInfo from './AssignmentInfo';
 
 const useStyles = makeStyles(theme => ({
   avatar: {
@@ -56,6 +58,7 @@ const Results = ({ className, devices, ...rest }) => {
   const [keyword, setkeyword] = useState('');
   const [isDeleteMode, setDeleteMode] = useState(false);
   const [isRepairMode, setRepairMode] = useState(false);
+  const [isAssignmentMode, setAssignmentMode] = useState(false);
   const [snackBarOpen, setSnackBarOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [rowData, setRowData] = useState({});
@@ -101,6 +104,12 @@ const Results = ({ className, devices, ...rest }) => {
     setRowData(dataOfSelectedRow);
   };
 
+  const handleAssignmentInfo = i => {
+    setAssignmentMode(true);
+    const dataOfSelectedRow = data.getDevices.devices.slice(0, limit)[i];
+    setRowData(dataOfSelectedRow);
+  };
+
   const handleDeviceDelete = i => {
     setDeleteMode(true);
     const dataOfSelectedRow = data.getDevices.devices.slice(0, limit)[i];
@@ -122,6 +131,8 @@ const Results = ({ className, devices, ...rest }) => {
   const handleDialogClosed = args => {
     setDeleteMode(false);
     setRepairMode(false);
+    setAssignmentMode(false);
+
     if (args != null && args.confirmed === true) {
       setMessage(args.message);
       setSnackBarOpen(true);
@@ -193,6 +204,16 @@ const Results = ({ className, devices, ...rest }) => {
                       </Tooltip>
                     </Link>
                   </TableCell>
+                  <TableCell padding="checkbox">
+                    <Tooltip title="Assignment info">
+                      <IconButton
+                        aria-label="Assignment info"
+                        onClick={e => handleAssignmentInfo(i)}
+                      >
+                        <AccountCircleIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>
 
                   <TableCell padding="checkbox">
                     <Tooltip title="Add to repair">
@@ -219,14 +240,6 @@ const Results = ({ className, devices, ...rest }) => {
             </TableBody>
           </Table>
         </Box>
-        {/* {isEditMode ? (
-          // <EditDevice
-          //   isEditMode={isEditMode}
-          //   handleClosed={handleDialogClosed}
-          //   rowData={rowData}
-          // />
-       
-        ) : null} */}
         {isRepairMode ? (
           <RepairDevice
             isRepairMode={isRepairMode}
@@ -240,6 +253,13 @@ const Results = ({ className, devices, ...rest }) => {
             handleClosed={handleDialogClosed}
             rowData={rowData}
             getDevicesQuery={GET_DEVICES}
+          />
+        ) : null}
+        {isAssignmentMode ? (
+          <AssignmentInfo
+            isAssignmentMode={isAssignmentMode}
+            handleClosed={handleDialogClosed}
+            rowData={rowData}
           />
         ) : null}
         <div className={classes.root}>
