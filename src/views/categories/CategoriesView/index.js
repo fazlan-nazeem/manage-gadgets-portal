@@ -17,7 +17,7 @@ const CategoriesListView = () => {
   const classes = useStyles();
 
   return (
-    <Page className={classes.root} title="Customers">
+    <Page className={classes.root} title="Categories">
       <Container maxWidth={false}>
         <Toolbar />
         <Box mt={3}>

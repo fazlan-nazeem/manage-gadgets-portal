@@ -131,7 +131,7 @@ const Result = props => {
         alignItems="center"
         justify="center"
       >
-        <Grid item xs={6}>
+        <Grid item xs={12}>
           <Card>
             <CardContent>
               <TextField

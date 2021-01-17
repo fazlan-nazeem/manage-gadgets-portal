@@ -17,7 +17,7 @@ const CustomerListView = () => {
   const classes = useStyles();
 
   return (
-    <Page className={classes.root} title="Customers">
+    <Page className={classes.root} title="Devices">
       <Container maxWidth={false}>
         <Toolbar />
         <Box mt={3}>

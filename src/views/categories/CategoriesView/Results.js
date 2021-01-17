@@ -152,7 +152,7 @@ const Results = ({ className, devices, ...rest }) => {
         </Card>
       </Box>
       <PerfectScrollbar>
-        <Box minWidth={1050}>
+        <Box minWidth={750}>
           <Table>
             <TableHead>
               <TableRow>

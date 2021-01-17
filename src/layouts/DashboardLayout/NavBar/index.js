@@ -18,12 +18,7 @@ import DashboardIcon from '@material-ui/icons/Dashboard';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import CategoryIcon from '@material-ui/icons/Category';
 import NavItem from './NavItem';
-
-const user = {
-  avatar: '/static/images/avatars/avatar_6.png',
-  jobTitle: 'WSO2',
-  name: 'Katarina Smith'
-};
+import { useAuth0 } from '@auth0/auth0-react';
 
 const items = [
   {
@@ -82,6 +77,13 @@ const useStyles = makeStyles(() => ({
 const NavBar = ({ onMobileClose, openMobile }) => {
   const classes = useStyles();
   const location = useLocation();
+  const { user } = useAuth0();
+
+  const loggedInUser = {
+    avatar: user.picture,
+    jobTitle: user['https://managegadget.com_customer'],
+    name: user.name
+  };
 
   useEffect(() => {
     if (openMobile && onMobileClose) {
@@ -96,14 +98,14 @@ const NavBar = ({ onMobileClose, openMobile }) => {
         <Avatar
           className={classes.avatar}
           component={RouterLink}
-          src={user.avatar}
+          src={loggedInUser.avatar}
           to="/app/account"
         />
         <Typography className={classes.name} color="textPrimary" variant="h5">
-          {user.name}
+          {loggedInUser.name}
         </Typography>
         <Typography color="textSecondary" variant="body2">
-          {user.jobTitle}
+          {loggedInUser.jobTitle}
         </Typography>
       </Box>
       <Divider />
