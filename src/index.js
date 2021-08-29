@@ -7,14 +7,15 @@ import { Auth0Provider } from '@auth0/auth0-react';
 
 ReactDOM.render(
   <BrowserRouter>
-    <Auth0Provider
-      domain="fazlan.auth0.com"
-      clientId="KMhytaOem2bZ2BlVBuyPJlySdhijMTIa"
+    {/* <Auth0Provider
+      domain="managegadget.us.auth0.com"
+      clientId="exy4X0vxBn2PPeA8UJo5GH4fKUs2Zci7"
       redirectUri="https://managegadget.com"
+      audience="https://api.managegadget.com"
       cacheLocation="localstorage"
-    >
+    > */}
       <App />
-    </Auth0Provider>
+    {/* </Auth0Provider> */}
   </BrowserRouter>,
   document.getElementById('root')
 );

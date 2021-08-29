@@ -12,7 +12,6 @@ import {
   makeStyles
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
-import NotificationsIcon from '@material-ui/icons/NotificationsOutlined';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import Logo from 'src/components/Logo';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -39,13 +38,13 @@ const TopBar = ({ className, onMobileNavOpen, ...rest }) => {
           <Logo />
         </RouterLink>
         <Box flexGrow={1} />
-        <Hidden mdDown>
-          <Tooltip title="Logout">
-            <IconButton color="inherit" onClick={e => logout()}>
-              <ExitToAppIcon />
-            </IconButton>
-          </Tooltip>
-        </Hidden>
+
+        <Tooltip title="Logout">
+          <IconButton color="inherit" onClick={e => logout()}>
+            <ExitToAppIcon />
+          </IconButton>
+        </Tooltip>
+
         <Hidden lgUp>
           <IconButton color="inherit" onClick={onMobileNavOpen}>
             <MenuIcon />

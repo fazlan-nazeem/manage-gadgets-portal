@@ -16,26 +16,27 @@ const client = new ApolloClient({
 
 const App = () => {
   const routing = useRoutes(routes);
-  const {
-    loginWithRedirect,
-    isAuthenticated,
-    user,
-    isLoading,
-    error
-  } = useAuth0();
+  const isAuthenticated = true;
+  // const {
+  //   loginWithRedirect,
+  //   isAuthenticated,
+  //   user,
+  //   isLoading,
+  //   error
+  // } = useAuth0();
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-  if (error) {
-    return <div>Oops... {error.message}</div>;
-  }
+  // if (isLoading) {
+  //   return <div>Loading...</div>;
+  // }
+  // if (error) {
+  //   return <div>Oops... {error.message}</div>;
+  // }
 
-  if (!isAuthenticated) {
-    loginWithRedirect();
-  }
+  // if (!isAuthenticated) {
+  //   loginWithRedirect();
+  // }
 
-  console.log(user);
+  // console.log(user);
 
   // const [isAuth, setIsAuth] = useState(false);
 

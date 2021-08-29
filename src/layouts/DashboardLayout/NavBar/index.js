@@ -42,16 +42,6 @@ const items = [
     title: 'Categories'
   },
   {
-    href: '/app/account',
-    icon: AccountBoxIcon,
-    title: 'Account'
-  },
-  {
-    href: '/login',
-    icon: LockIcon,
-    title: 'Login'
-  },
-  {
     href: '/register',
     icon: UserPlusIcon,
     title: 'Register'
@@ -80,9 +70,9 @@ const NavBar = ({ onMobileClose, openMobile }) => {
   const { user } = useAuth0();
 
   const loggedInUser = {
-    avatar: user.picture,
-    jobTitle: user['https://managegadget.com_customer'],
-    name: user.name
+    avatar: "https://media-exp1.licdn.com/dms/image/C5603AQHXkCkz9RqgzQ/profile-displayphoto-shrink_800_800/0/1606624111534?e=1635984000&v=beta&t=yS6-hKm9OjyuYF2mqKslE7BfyugBOWjTHPquKZCJYFM" ,
+    jobTitle: "Engineer",
+    name: "JohnDoe"
   };
 
   useEffect(() => {
