@@ -17,7 +17,7 @@ const AssignmentInfo = props => {
   const [name, setEmployeeName] = useState('');
   const [email, setEmployeeEmail] = useState('');
   const [location, setEmployeeLocation] = useState('');
-  const [assignmentId, setAssignmentId] = useState('');
+  const [id, setAssignmentId] = useState('');
 
   const deviceId = dataOfCurrentlySelectedRow.id;
 
@@ -30,6 +30,12 @@ const AssignmentInfo = props => {
         location
       }
     }
+  `;
+
+  const DELETE_DEVICE_ASSIGNMENT = gql`
+  mutation DELETE_DEVICE_ASSIGNMENT($id: ID!) {
+    deleteDeviceAssignment(id: $id)
+  }
   `;
 
   const GET_DEVICE_ASSIGNMENT = gql`
@@ -72,6 +78,15 @@ const AssignmentInfo = props => {
       props.handleClosed({
         confirmed: true,
         message: 'Successfully added device assignment!'
+      });
+    }
+  });
+
+  const [confirmRemoveAssignment] = useMutation(DELETE_DEVICE_ASSIGNMENT, {
+    onCompleted: () => {
+      props.handleClosed({
+        confirmed: true,
+        message: 'Successfully removed device assignment!'
       });
     }
   });
@@ -130,6 +145,15 @@ const AssignmentInfo = props => {
             }}
           >
             Save
+          </Button>
+          <Button onClick={ ()=> {
+            confirmRemoveAssignment( {
+              variables : {
+                id
+              }
+            });
+          }}>
+            Remove Assignment
           </Button>
         </DialogActions>
       </Dialog>
