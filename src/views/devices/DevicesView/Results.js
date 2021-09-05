@@ -18,7 +18,9 @@ import {
   CardContent,
   TextField,
   InputAdornment,
-  SvgIcon
+  SvgIcon,
+  Select,
+  Grid,
 } from '@material-ui/core';
 import { Search as SearchIcon } from 'react-feather';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -33,6 +35,10 @@ import MoreIcon from '@material-ui/icons/More';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Link } from 'react-router-dom';
 import AssignmentInfo from './AssignmentInfo';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+
 
 const useStyles = makeStyles(theme => ({
   avatar: {
@@ -43,7 +49,14 @@ const useStyles = makeStyles(theme => ({
     '& > * + *': {
       marginTop: theme.spacing(2)
     }
-  }
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
 }));
 
 function Alert(props) {
@@ -62,10 +75,11 @@ const Results = ({ className, devices, ...rest }) => {
   const [snackBarOpen, setSnackBarOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [rowData, setRowData] = useState({});
+  const [status, setStatus] = useState("ALL");
 
   const GET_DEVICES = gql`
-    query GET_DEVICES($pageSize: Int, $after: String, $keyword: String) {
-      getDevices(pageSize: $pageSize, after: $after, keyword: $keyword) {
+    query GET_DEVICES($pageSize: Int, $after: String, $keyword: String, $deviceStatus: String) {
+      getDevices(pageSize: $pageSize, after: $after, keyword: $keyword, deviceStatus: $deviceStatus) {
         hasMore
         totalCount
         devices {
@@ -120,7 +134,8 @@ const Results = ({ className, devices, ...rest }) => {
     variables: {
       pageSize: limit,
       after: (page * limit).toString(),
-      keyword: keyword
+      keyword: keyword,
+      deviceStatus: status,
     },
     fetchPolicy: 'network-only'
   });
@@ -147,29 +162,59 @@ const Results = ({ className, devices, ...rest }) => {
     }
   };
 
+  const handleStatusChange = event => {
+    setStatus(event.target.value);
+  };
+
   return (
     <Card className={clsx(classes.root, className)} {...rest}>
       <Box mt={3}>
         <Card>
           <CardContent>
-            <Box maxWidth={500}>
-              <TextField
-                onKeyPress={handleSearch}
-                defaultValue={keyword}
-                fullWidth
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SvgIcon fontSize="small" color="action">
-                        <SearchIcon />
-                      </SvgIcon>
-                    </InputAdornment>
-                  )
-                }}
-                placeholder="Search"
-                variant="outlined"
-              />
-            </Box>
+          <Grid container spacing={6}>
+            <Grid item xs={3}>
+              <Box maxWidth={800}  >
+                  <TextField
+                    onKeyPress={handleSearch}
+                    defaultValue={keyword}
+                    fullWidth
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SvgIcon fontSize="small" color="action">
+                            <SearchIcon />
+                          </SvgIcon>
+                        </InputAdornment>
+                      )
+                    }}
+                    placeholder="Search"
+                    variant="outlined"
+                  />
+                    
+                </Box>
+            </Grid>
+
+          <Grid item xs={3}>
+            <FormControl className={classes.formControl}>
+              <InputLabel>Status</InputLabel>
+              <Select
+                labelId="demo-simple-select-readonly-label"
+                id="demo-simple-select-readonly"
+                value={status}
+                onChange={handleStatusChange}
+              > 
+                <MenuItem value="ALL">All</MenuItem>   
+                <MenuItem value="AVAILABLE">Available</MenuItem>
+                <MenuItem value="ASSIGNED">Assigned</MenuItem>
+                <MenuItem value="IN_REPAIR">In Repair</MenuItem>
+              </Select>
+    
+            </FormControl>
+          </Grid>
+        </Grid>
+      
+           
+        
           </CardContent>
         </Card>
       </Box>

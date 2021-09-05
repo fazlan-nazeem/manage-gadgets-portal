@@ -50,6 +50,33 @@ const AssignmentInfo = props => {
     }
   `;
 
+const GET_DEVICES = gql`
+query GET_DEVICES {
+  getDevices {
+    hasMore
+    totalCount
+    devices {
+      id
+      serialNumber
+      model
+      description
+      vendor
+      deviceStatus
+      createdAt
+      updatedAt
+      warrantyExpiryDate
+      purchaseDate
+      deviceCategory {
+        id
+        name
+        createdAt
+        updatedAt
+      }
+    }
+  }
+}
+`;
+
   // Get device assignments
   const {
     loading: getAssignmentLoading,
@@ -140,7 +167,9 @@ const AssignmentInfo = props => {
                     email,
                     location
                   }
-                }
+                },
+                refetchQueries: [{ query: GET_DEVICES }],
+                awaitRefetchQueries: true
               });
             }}
           >
@@ -150,7 +179,9 @@ const AssignmentInfo = props => {
             confirmRemoveAssignment( {
               variables : {
                 id
-              }
+              },
+              refetchQueries: [{ query: GET_DEVICES }],
+              awaitRefetchQueries: true
             });
           }}>
             Remove Assignment
