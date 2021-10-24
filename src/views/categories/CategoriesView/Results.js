@@ -121,7 +121,6 @@ const Results = ({ className, devices, ...rest }) => {
 
   const handleSearch = event => {
     let searchQuery = event.target.value;
-    console.log(searchQuery);
     if (event.key === 'Enter') {
       setkeyword(searchQuery);
     }
