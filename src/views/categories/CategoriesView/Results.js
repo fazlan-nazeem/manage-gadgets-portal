@@ -74,6 +74,11 @@ const Results = ({ className, devices, ...rest }) => {
   const [message, setMessage] = useState('');
   const [isEditMode, setEditMode] = useState(false);
   const { loading, error, data } = useQuery(GET_DEVICE_CATEGORIES, {
+    variables: {
+      pageSize: limit,
+      after: (page * limit).toString(),
+      keyword: keyword,
+    },
     fetchPolicy: 'network-only'
   });
 
@@ -116,7 +121,7 @@ const Results = ({ className, devices, ...rest }) => {
 
   const handleSearch = event => {
     let searchQuery = event.target.value;
-
+    console.log(searchQuery);
     if (event.key === 'Enter') {
       setkeyword(searchQuery);
     }
