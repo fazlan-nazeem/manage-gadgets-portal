@@ -265,6 +265,7 @@ const Results = ({ className, devices, ...rest }) => {
                       <IconButton
                         aria-label="repair"
                         onClick={e => handleDeviceRepair(i)}
+                        disabled={(entry.deviceStatus) === 'IN_REPAIR'? true:false}
                       >
                         <BugReportIcon />
                       </IconButton>
