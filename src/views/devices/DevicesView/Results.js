@@ -1,3 +1,5 @@
+/* eslint-disable no-use-before-define */
+/* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
@@ -26,21 +28,20 @@ import { Search as SearchIcon } from 'react-feather';
 import DeleteIcon from '@material-ui/icons/Delete';
 import BugReportIcon from '@material-ui/icons/BugReport';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import DeleteDevice from './DeleteDevice';
-import RepairDevice from './RepairDevice';
 import { useQuery, gql } from '@apollo/client';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import MoreIcon from '@material-ui/icons/More';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Link } from 'react-router-dom';
-import AssignmentInfo from './AssignmentInfo';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
+import AssignmentInfo from './AssignmentInfo';
+import RepairDevice from './RepairDevice';
+import DeleteDevice from './DeleteDevice';
 
-
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   avatar: {
     marginRight: theme.spacing(2)
   },
@@ -63,6 +64,7 @@ function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
+// eslint-disable-next-line react/prop-types
 const Results = ({ className, devices, ...rest }) => {
   const classes = useStyles();
 
@@ -75,7 +77,7 @@ const Results = ({ className, devices, ...rest }) => {
   const [snackBarOpen, setSnackBarOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [rowData, setRowData] = useState({});
-  const [status, setStatus] = useState("ALL");
+  const [status, setStatus] = useState('ALL');
 
   const GET_DEVICES = gql`
     query GET_DEVICES($pageSize: Int, $after: String, $keyword: String, $deviceStatus: String) {
@@ -104,7 +106,7 @@ const Results = ({ className, devices, ...rest }) => {
     }
   `;
 
-  const handleLimitChange = event => {
+  const handleLimitChange = (event) => {
     setLimit(event.target.value);
   };
 
@@ -112,19 +114,19 @@ const Results = ({ className, devices, ...rest }) => {
     setPage(newPage);
   };
 
-  const handleDeviceRepair = i => {
+  const handleDeviceRepair = (i) => {
     setRepairMode(true);
     const dataOfSelectedRow = data.getDevices.devices.slice(0, limit)[i];
     setRowData(dataOfSelectedRow);
   };
 
-  const handleAssignmentInfo = i => {
+  const handleAssignmentInfo = (i) => {
     setAssignmentMode(true);
     const dataOfSelectedRow = data.getDevices.devices.slice(0, limit)[i];
     setRowData(dataOfSelectedRow);
   };
 
-  const handleDeviceDelete = i => {
+  const handleDeviceDelete = (i) => {
     setDeleteMode(true);
     const dataOfSelectedRow = data.getDevices.devices.slice(0, limit)[i];
     setRowData(dataOfSelectedRow);
@@ -134,7 +136,7 @@ const Results = ({ className, devices, ...rest }) => {
     variables: {
       pageSize: limit,
       after: (page * limit).toString(),
-      keyword: keyword,
+      keyword,
       deviceStatus: status,
     },
     fetchPolicy: 'network-only'
@@ -143,7 +145,7 @@ const Results = ({ className, devices, ...rest }) => {
   if (loading) return <CircularProgress />;
   if (error) return <p>Error :(</p>;
 
-  const handleDialogClosed = args => {
+  const handleDialogClosed = (args) => {
     setDeleteMode(false);
     setRepairMode(false);
     setAssignmentMode(false);
@@ -154,15 +156,15 @@ const Results = ({ className, devices, ...rest }) => {
     }
   };
 
-  const handleSearch = event => {
-    let searchQuery = event.target.value;
+  const handleSearch = (event) => {
+    const searchQuery = event.target.value;
 
     if (event.key === 'Enter') {
       setkeyword(searchQuery);
     }
   };
 
-  const handleStatusChange = event => {
+  const handleStatusChange = (event) => {
     setStatus(event.target.value);
   };
 
@@ -171,9 +173,9 @@ const Results = ({ className, devices, ...rest }) => {
       <Box mt={3}>
         <Card>
           <CardContent>
-          <Grid container spacing={6}>
-            <Grid item xs={3}>
-              <Box maxWidth={800}  >
+            <Grid container spacing={6}>
+              <Grid item xs={3}>
+                <Box maxWidth={800}>
                   <TextField
                     onKeyPress={handleSearch}
                     defaultValue={keyword}
@@ -190,31 +192,29 @@ const Results = ({ className, devices, ...rest }) => {
                     placeholder="Search"
                     variant="outlined"
                   />
-                    
+
                 </Box>
+              </Grid>
+
+              <Grid item xs={3}>
+                <FormControl className={classes.formControl}>
+                  <InputLabel>Status</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-readonly-label"
+                    id="demo-simple-select-readonly"
+                    value={status}
+                    onChange={handleStatusChange}
+                  >
+                    <MenuItem value="ALL">All</MenuItem>
+                    <MenuItem value="AVAILABLE">Available</MenuItem>
+                    <MenuItem value="ASSIGNED">Assigned</MenuItem>
+                    <MenuItem value="IN_REPAIR">In Repair</MenuItem>
+                  </Select>
+
+                </FormControl>
+              </Grid>
             </Grid>
 
-          <Grid item xs={3}>
-            <FormControl className={classes.formControl}>
-              <InputLabel>Status</InputLabel>
-              <Select
-                labelId="demo-simple-select-readonly-label"
-                id="demo-simple-select-readonly"
-                value={status}
-                onChange={handleStatusChange}
-              > 
-                <MenuItem value="ALL">All</MenuItem>   
-                <MenuItem value="AVAILABLE">Available</MenuItem>
-                <MenuItem value="ASSIGNED">Assigned</MenuItem>
-                <MenuItem value="IN_REPAIR">In Repair</MenuItem>
-              </Select>
-    
-            </FormControl>
-          </Grid>
-        </Grid>
-      
-           
-        
           </CardContent>
         </Card>
       </Box>
@@ -232,6 +232,7 @@ const Results = ({ className, devices, ...rest }) => {
             </TableHead>
             <TableBody>
               {data.getDevices.devices.slice(0, limit).map((entry, i) => (
+                // eslint-disable-next-line react/no-array-index-key
                 <TableRow key={i}>
                   <TableCell>{entry.serialNumber}</TableCell>
                   <TableCell>{entry.deviceCategory.name}</TableCell>
@@ -253,7 +254,7 @@ const Results = ({ className, devices, ...rest }) => {
                     <Tooltip title="Assignment info">
                       <IconButton
                         aria-label="Assignment info"
-                        onClick={e => handleAssignmentInfo(i)}
+                        onClick={(e) => handleAssignmentInfo(i)}
                       >
                         <AccountCircleIcon />
                       </IconButton>
@@ -264,8 +265,8 @@ const Results = ({ className, devices, ...rest }) => {
                     <Tooltip title="Add to repair">
                       <IconButton
                         aria-label="repair"
-                        onClick={e => handleDeviceRepair(i)}
-                        disabled={(entry.deviceStatus) === 'IN_REPAIR'? true:false}
+                        onClick={(e) => handleDeviceRepair(i)}
+                        disabled={(entry.deviceStatus) === 'IN_REPAIR'}
                       >
                         <BugReportIcon />
                       </IconButton>
@@ -275,7 +276,7 @@ const Results = ({ className, devices, ...rest }) => {
                     <Tooltip title="Delete entry">
                       <IconButton
                         aria-label="delete"
-                        onClick={e => handleDeviceDelete(i)}
+                        onClick={(e) => handleDeviceDelete(i)}
                       >
                         <DeleteIcon />
                       </IconButton>
@@ -334,5 +335,5 @@ const Results = ({ className, devices, ...rest }) => {
 Results.propTypes = {
   className: PropTypes.string
 };
-
+console.log('render5');
 export default Results;

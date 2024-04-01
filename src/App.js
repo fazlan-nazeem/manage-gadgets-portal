@@ -1,16 +1,15 @@
+import React from 'react';
 import 'react-perfect-scrollbar/dist/css/styles.css';
-import React, { useEffect, useState } from 'react';
-import { useRoutes, Redirect } from 'react-router-dom';
+import { useRoutes } from 'react-router-dom';
 import { ThemeProvider } from '@material-ui/core';
 import GlobalStyles from 'src/components/GlobalStyles';
 import 'src/mixins/chartjs';
 import theme from 'src/theme';
 import routes from 'src/routes';
 import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client';
-import { useAuth0 } from '@auth0/auth0-react';
 
 const client = new ApolloClient({
-  uri: process.env.REACT_APP_API_URL,
+  uri: 'http://localhost:4000/graphql',
   cache: new InMemoryCache()
 });
 

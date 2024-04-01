@@ -11,9 +11,6 @@
     "eject": "react-scripts eject",
     "deploy": "aws s3 sync ./build s3://managegadget.com --acl public-read"
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -35,6 +32,7 @@
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@material-ui/styles": "^4.10.0",
     "apollo-link-http": "^1.5.17",
+    "babel-eslint": "^10.1.0",
     "chart.js": "^2.9.4",
     "clsx": "^1.1.1",
     "formik": "^2.1.5",
@@ -56,21 +54,13 @@
     "react-pkce": "^0.9.11",
     "react-router": "^6.0.0-beta.0",
     "react-router-dom": "^6.0.0-beta.0",
-    "react-scripts": "^3.4.1",
+    "react-scripts": "^5.0.1",
     "universal-cookie": "^4.0.4",
     "uuid": "^8.3.0",
     "yup": "^0.29.3"
   },
   "devDependencies": {
     "apollo-link": "^1.2.14",
-    "eslint": "^6.8.0",
-    "eslint-config-airbnb": "^18.2.0",
-    "eslint-config-prettier": "^6.11.0",
-    "eslint-plugin-import": "^2.22.0",
-    "eslint-plugin-jsx-a11y": "^6.3.1",
-    "eslint-plugin-prettier": "^3.1.4",
-    "eslint-plugin-react": "^7.20.3",
-    "eslint-plugin-react-hooks": "^2.5.1",
     "prettier": "^1.19.1"
   }
 }
