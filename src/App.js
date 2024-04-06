@@ -8,8 +8,11 @@ import theme from 'src/theme';
 import routes from 'src/routes';
 import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client';
 
+console.log("portal starting");
+console.log(process.env.REACT_APP_API_URL);
+
 const client = new ApolloClient({
-  uri: 'http://localhost:4000/graphql',
+  uri: process.env.REACT_APP_API_URL,
   cache: new InMemoryCache()
 });
 

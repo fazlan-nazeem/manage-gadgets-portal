@@ -12,6 +12,7 @@ ARG NODE_VERSION=20.12.0
 # Use node image for base image for all stages.
 FROM node:${NODE_VERSION}-alpine as base
 
+
 # Set working directory for all build stages.
 WORKDIR /usr/src/app
 
@@ -32,7 +33,8 @@ RUN --mount=type=bind,source=package.json,target=package.json \
 ################################################################################
 # Create a stage for building the application.
 FROM deps as build
-
+ARG REACT_APP_API_URL
+ENV REACT_APP_API_URL=${REACT_APP_API_URL}
 # Download additional development dependencies before building, as some projects require
 # "devDependencies" to be installed to build. If you don't need this, remove this step.
 RUN --mount=type=bind,source=package.json,target=package.json \
@@ -43,7 +45,8 @@ RUN --mount=type=bind,source=package.json,target=package.json \
 # Copy the rest of the source files into the image.
 COPY . .
 # Run the build script.
-RUN npm run build
+RUN echo "API URL is ${REACT_APP_API_URL}"
+RUN REACT_APP_API_URL=${REACT_APP_API_URL} npm run build
 
 ################################################################################
 # Create a new stage to run the application with minimal runtime dependencies
@@ -55,16 +58,15 @@ ENV NODE_ENV production
 
 # Copy package.json so that package manager commands can be used.
 COPY package.json .
-
+RUN npm install -g serve
 # Copy the production dependencies from the deps stage and also
 # the built application from the build stage into the image.
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/./ ././
 RUN chown -R 10001 /usr/src/app/node_modules/.cache
 USER 10001
-
 # Expose the port that the application listens on.
 EXPOSE 3000
 
 # Run the application.
-CMD npm start
+CMD serve -s build
