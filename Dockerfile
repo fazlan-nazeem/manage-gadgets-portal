@@ -33,8 +33,8 @@ RUN --mount=type=bind,source=package.json,target=package.json \
 ################################################################################
 # Create a stage for building the application.
 FROM deps as build
-ARG REACT_APP_API_URL
-ENV REACT_APP_API_URL=${REACT_APP_API_URL}
+ARG REACT_APP_ENV
+ENV REACT_APP_ENV=${REACT_APP_ENV}
 # Download additional development dependencies before building, as some projects require
 # "devDependencies" to be installed to build. If you don't need this, remove this step.
 RUN --mount=type=bind,source=package.json,target=package.json \
@@ -45,8 +45,8 @@ RUN --mount=type=bind,source=package.json,target=package.json \
 # Copy the rest of the source files into the image.
 COPY . .
 # Run the build script.
-RUN echo "API URL is ${REACT_APP_API_URL}"
-RUN REACT_APP_API_URL=${REACT_APP_API_URL} npm run build
+RUN echo "API URL is ${REACT_APP_ENV}"
+RUN REACT_APP_API_URL=${REACT_APP_ENV} npm run build
 
 ################################################################################
 # Create a new stage to run the application with minimal runtime dependencies

@@ -6,8 +6,6 @@ import AccountView from 'src/views/account/AccountView';
 import DashboardView from 'src/views/reports/DashboardView';
 import LoginView from 'src/views/auth/LoginView';
 import NotFoundView from 'src/views/errors/NotFoundView';
-
-import RegisterView from 'src/views/auth/RegisterView';
 import RepairsView from 'src/views/repairs/RepairsView';
 import DevicesView from 'src/views/devices/DevicesView';
 import CategoriesView from 'src/views/categories/CategoriesView';
@@ -19,7 +17,6 @@ const routes = [
     element: <MainLayout />,
     children: [
       { path: 'login', element: <LoginView /> },
-      { path: 'register', element: <RegisterView /> },
       { path: '404', element: <NotFoundView /> },
       { path: '/', element: <Navigate to="/app/dashboard" /> },
       { path: '*', element: <Navigate to="/404" /> }

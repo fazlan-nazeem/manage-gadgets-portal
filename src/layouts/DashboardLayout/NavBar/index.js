@@ -40,11 +40,6 @@ const items = [
     href: '/app/categories',
     icon: CategoryIcon,
     title: 'Categories'
-  },
-  {
-    href: '/register',
-    icon: UserPlusIcon,
-    title: 'Register'
   }
 ];
 

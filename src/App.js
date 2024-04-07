@@ -12,8 +12,12 @@ import { useAuthContext } from "@asgardeo/auth-react";
 window.configs = {
   apiUrl: '/choreo-apis/ygns/managegadgetsapi/manage-gadget-api-bfc/v1.0',
 };
-const apiUrl = window?.configs?.apiUrl ? window.configs.apiUrl : "/";
-console.log(apiUrl);
+let apiUrl = window?.configs?.apiUrl ? window.configs.apiUrl : "/";
+if(process.env.REACT_APP_ENV == 'Development') {
+  apiUrl = "http://localhost:4000/graphql"
+}
+
+console.log(apiUrl)
 const client = new ApolloClient({
   uri: apiUrl,
   cache: new InMemoryCache()
