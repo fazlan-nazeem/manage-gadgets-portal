@@ -65,61 +65,40 @@ const LoginView = () => {
             }) => (
               <form onSubmit={handleSubmit}>
                 <Box mb={3}>
-                  <Typography color="textPrimary" variant="h2">
-                    Sign in
+                  <Typography color="textPrimary" variant="h2" align="center">
+                    Welcome to Manage Gadgets! 
                   </Typography>
                   <Typography
                     color="textSecondary"
                     gutterBottom
                     variant="body2"
+                    align="center"
                   >
-                    Sign in on the internal platform
+                    Manage all your company gadgets within a unified platform
                   </Typography>
                 </Box>
 
-                <TextField
-                  error={Boolean(touched.email && errors.email)}
-                  fullWidth
-                  helperText={touched.email && errors.email}
-                  label="Email Address"
-                  margin="normal"
-                  name="email"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  type="email"
-                  value={values.email}
-                  variant="outlined"
-                />
-                <TextField
-                  error={Boolean(touched.password && errors.password)}
-                  fullWidth
-                  helperText={touched.password && errors.password}
-                  label="Password"
-                  margin="normal"
-                  name="password"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  type="password"
-                  value={values.password}
-                  variant="outlined"
-                />
-                <Box my={2}>
+                <Box 
+                  textAlign="center"
+                  >
+                  <img
+                    className={classes.image}
+                    src="static/manage-gadget-home.jpeg"
+                  />
+                </Box>
+                <Box my={2} textAlign="center">
                   <Button
                     color="primary"
                     disabled={isSubmitting}
-                    fullWidth
-                    size="large"
+                    size="medium"
                     type="submit"
                     variant="contained"
                   >
-                    Sign in now
+                    Sign in
                   </Button>
                 </Box>
-                <Typography color="textSecondary" variant="body1">
-                  Don&apos;t have an account?{' '}
-                  <Link component={RouterLink} to="/register" variant="h6">
-                    Sign up
-                  </Link>
+                <Typography color="textSecondary" variant="body2" textAlign="center">
+                  For demo account use "john@abc.com" as the username and "hba4vkd4hrd_PDM3ezk" as the password
                 </Typography>
               </form>
             )}

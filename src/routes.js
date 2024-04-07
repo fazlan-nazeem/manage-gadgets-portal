@@ -18,14 +18,21 @@ const routes = [
     children: [
       { path: 'login', element: <LoginView /> },
       { path: '404', element: <NotFoundView /> },
-      { path: '/', element: <Navigate to="/app/dashboard" /> },
+      { path: '/', element: <Navigate to="/login" /> },
       { path: '*', element: <Navigate to="/404" /> }
+    ]
+  },
+  {
+    path: 'login',
+    children: [
+      { path: 'login', element: <LoginView /> }
     ]
   },
   {
     path: 'app',
     element: <DashboardLayout />,
     children: [
+      { path: 'login', element: <LoginView /> },
       { path: 'account', element: <AccountView /> },
       { path: 'dashboard', element: <DashboardView /> },
       { path: 'repairs', element: <RepairsView /> },
