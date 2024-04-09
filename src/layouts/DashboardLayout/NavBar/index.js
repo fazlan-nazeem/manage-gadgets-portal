@@ -18,7 +18,7 @@ import DashboardIcon from '@material-ui/icons/Dashboard';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import CategoryIcon from '@material-ui/icons/Category';
 import NavItem from './NavItem';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuthContext } from "@asgardeo/auth-react";
 
 const items = [
   {
@@ -62,12 +62,12 @@ const useStyles = makeStyles(() => ({
 const NavBar = ({ onMobileClose, openMobile }) => {
   const classes = useStyles();
   const location = useLocation();
-  const { user } = useAuth0();
+  const { state, signIn, signOut } = useAuthContext();
 
   const loggedInUser = {
     avatar: "https://media-exp1.licdn.com/dms/image/C5603AQHXkCkz9RqgzQ/profile-displayphoto-shrink_800_800/0/1606624111534?e=1635984000&v=beta&t=yS6-hKm9OjyuYF2mqKslE7BfyugBOWjTHPquKZCJYFM" ,
-    jobTitle: "Engineer",
-    name: "JohnDoe"
+    Company: "Engineer",
+    name: state.username
   };
 
   useEffect(() => {

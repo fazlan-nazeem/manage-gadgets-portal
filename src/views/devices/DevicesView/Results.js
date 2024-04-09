@@ -335,5 +335,5 @@ const Results = ({ className, devices, ...rest }) => {
 Results.propTypes = {
   className: PropTypes.string
 };
-console.log('render5');
+
 export default Results;

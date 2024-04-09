@@ -14,6 +14,9 @@ FROM node:${NODE_VERSION}-alpine as base
 ARG REACT_APP_ENV
 ENV REACT_APP_ENV=${REACT_APP_ENV}
 
+# Install gettext (includes envsubst)
+RUN apk add --no-cache gettext
+
 # Set working directory for all build stages.
 WORKDIR /usr/src/app
 
@@ -29,9 +32,15 @@ RUN --mount=type=bind,source=package.json,target=package.json \
 COPY . .
 RUN npm run build
 RUN chown -R 10001 /usr/src/app/node_modules/.cache
+
+# Copy entrypoint script
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Set the entrypoint script to run when the container starts
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
 USER 10001    
-
-
 
 # Expose the port that the application listens on.
 EXPOSE 3000

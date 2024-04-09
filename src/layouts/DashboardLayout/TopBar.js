@@ -16,6 +16,7 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import Logo from 'src/components/Logo';
 import { useAuth0 } from '@auth0/auth0-react';
 import Tooltip from '@material-ui/core/Tooltip';
+import { useAuthContext } from "@asgardeo/auth-react";
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -28,8 +29,7 @@ const useStyles = makeStyles(() => ({
 const TopBar = ({ className, onMobileNavOpen, ...rest }) => {
   const classes = useStyles();
   const [notifications] = useState([]);
-
-  const { logout } = useAuth0();
+  const { state, signIn, signOut } = useAuthContext();
 
   return (
     <AppBar className={clsx(classes.root, className)} elevation={0} {...rest}>
@@ -40,7 +40,7 @@ const TopBar = ({ className, onMobileNavOpen, ...rest }) => {
         <Box flexGrow={1} />
 
         <Tooltip title="Logout">
-          <IconButton color="inherit" onClick={e => logout()}>
+          <IconButton color="inherit" onClick={() => signOut()}>
             <ExitToAppIcon />
           </IconButton>
         </Tooltip>

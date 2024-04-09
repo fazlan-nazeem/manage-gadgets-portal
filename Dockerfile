@@ -63,7 +63,9 @@ RUN npm install -g serve
 # the built application from the build stage into the image.
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/./ ././
+
 RUN chown -R 10001 /usr/src/app/node_modules/.cache
+
 USER 10001
 # Expose the port that the application listens on.
 EXPOSE 3000

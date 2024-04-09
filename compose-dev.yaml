@@ -1,0 +1,25 @@
+# Comments are provided throughout this file to help you get started.
+# If you need more help, visit the Docker Compose reference guide at
+# https://docs.docker.com/go/compose-spec-reference/
+
+# Here the instructions define your application as a service called "server".
+# This service is built from the Dockerfile in the current directory.
+# You can add other services your application may depend on here, such as a
+# database or a cache. For examples, see the Awesome Compose repository:
+# https://github.com/docker/awesome-compose
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      args:
+        REACT_APP_ENV : Development
+    environment:
+      NODE_ENV: production
+      SIGN_IN_REDIRECT_URL: http://localhost:3000/app/dashboard
+      SIGN_OUT_REDIRECT_URL: http://localhost:3000/login
+      CLIENT_ID: RdRCqz8e1wmQPmCy1EYcI19twr8a
+    volumes:
+    - .:/usr/src/app  
+    ports:
+      - 3000:3000

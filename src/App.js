@@ -7,17 +7,13 @@ import 'src/mixins/chartjs';
 import theme from 'src/theme';
 import routes from 'src/routes';
 import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client';
-import { useAuthContext } from "@asgardeo/auth-react";
 
-window.configs = {
-  apiUrl: '/choreo-apis/ygns/managegadgetsapi/manage-gadget-api-bfc/v1.0',
-};
+
 let apiUrl = window?.configs?.apiUrl ? window.configs.apiUrl : "/";
 if(process.env.REACT_APP_ENV == 'Development') {
   apiUrl = "http://localhost:4000/graphql"
 }
 
-console.log(apiUrl)
 const client = new ApolloClient({
   uri: apiUrl,
   cache: new InMemoryCache()

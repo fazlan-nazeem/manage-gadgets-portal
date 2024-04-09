@@ -32,7 +32,6 @@ const routes = [
     path: 'app',
     element: <DashboardLayout />,
     children: [
-      { path: 'login', element: <LoginView /> },
       { path: 'account', element: <AccountView /> },
       { path: 'dashboard', element: <DashboardView /> },
       { path: 'repairs', element: <RepairsView /> },

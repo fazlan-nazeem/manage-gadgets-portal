@@ -27,5 +27,5 @@ const CustomerListView = () => {
     </Page>
   );
 };
-console.log('render4');
+
 export default CustomerListView;
