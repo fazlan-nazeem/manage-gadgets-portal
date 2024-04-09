@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Button,
   Dialog,
@@ -20,6 +20,10 @@ const DeleteDeviceCategory = props => {
   let dataOfCurrentlySelectedRow = props.rowData;
   const id = dataOfCurrentlySelectedRow.id;
   const GET_DEVICE_CATEGORIES = props.getDeviceCategoriesQuery;
+
+  const [limit] = useState(10);
+  const [page] = useState(0);
+  const [keyword] = useState('');
 
   const [confirmDeleteCategory] = useMutation(DELETE_DEVICE_CATEGORY, {
     onCompleted: () => {
@@ -53,7 +57,15 @@ const DeleteDeviceCategory = props => {
                 variables: {
                   id
                 },
-                refetchQueries: [{ query: GET_DEVICE_CATEGORIES }],
+                refetchQueries: [
+                  { query: GET_DEVICE_CATEGORIES,
+                    variables: { 
+                      pageSize: limit,
+                      after: (page * limit).toString(),
+                      keyword: keyword,
+                    }
+                  }
+                ],
                 awaitRefetchQueries: true
               });
             }}

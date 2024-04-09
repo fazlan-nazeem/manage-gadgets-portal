@@ -22,8 +22,12 @@ const ADD_CATEGORY = gql`
 `;
 
 const GET_DEVICE_CATEGORIES = gql`
-  query GET_DEVICE_CATEGORIES {
-    getDeviceCategories {
+  query GET_DEVICE_CATEGORIES(
+    $pageSize: Int
+    $after: String
+    $keyword: String
+  ) {
+    getDeviceCategories(pageSize: $pageSize, after: $after, keyword: $keyword) {
       hasMore
       totalCount
       deviceCategories {
@@ -47,6 +51,9 @@ const AddCategory = props => {
     }
   });
   const [name, setName] = useState('');
+  const [limit] = useState(10);
+  const [page] = useState(0);
+  const [keyword] = useState('');
 
   return (
     <div>
@@ -76,7 +83,15 @@ const AddCategory = props => {
                 variables: {
                   name
                 },
-                refetchQueries: [{ query: GET_DEVICE_CATEGORIES }],
+                refetchQueries: [
+                  { query: GET_DEVICE_CATEGORIES,
+                    variables: { 
+                      pageSize: limit,
+                      after: (page * limit).toString(),
+                      keyword: keyword,
+                    }
+                  }
+                ],
                 awaitRefetchQueries: true
               });
             }}
