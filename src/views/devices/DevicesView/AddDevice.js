@@ -52,8 +52,8 @@ const GET_DEVICE_CATEGORIES = gql`
 `;
 
 const GET_DEVICES = gql`
-  query GET_DEVICES {
-    getDevices {
+  query GET_DEVICES($pageSize: Int, $after: String, $keyword: String, $deviceStatus: String) {
+    getDevices(pageSize: $pageSize, after: $after, keyword: $keyword, deviceStatus: $deviceStatus) {
       hasMore
       totalCount
       devices {
@@ -81,6 +81,11 @@ const GET_DEVICES = gql`
 const AddDevice = props => {
   const classes = useStyles();
   const isOpen = props.isOpen;
+
+  const [page, setPage] = useState(0);
+  const [keyword, setkeyword] = useState('');
+  const [limit, setLimit] = useState(10);
+  const [status, setStatus] = useState('ALL');
 
   const { loading, error, data } = useQuery(GET_DEVICE_CATEGORIES);
   const [confirmAddDevice] = useMutation(ADD_DEVICE, {
@@ -177,7 +182,16 @@ const AddDevice = props => {
                     vendor
                   }
                 },
-                refetchQueries: [{ query: GET_DEVICES }],
+                refetchQueries: [
+                  { query: GET_DEVICES,
+                    variables: { 
+                      pageSize: limit,
+                      after: (page * limit).toString(),
+                      keyword: keyword,
+                      deviceStatus: status
+                    }
+                  }
+                ],
                 awaitRefetchQueries: true
               });
             }}

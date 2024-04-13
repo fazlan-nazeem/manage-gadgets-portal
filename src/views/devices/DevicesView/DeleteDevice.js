@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Button,
   Dialog,
@@ -18,6 +18,11 @@ const DELETE_DEVICE = gql`
 const DeleteDevice = props => {
   const isOpen = props.isDeleteMode;
   const GET_DEVICES = props.getDevicesQuery;
+  const [page, setPage] = useState(0);
+  const [keyword, setkeyword] = useState('');
+  const [limit, setLimit] = useState(10);
+  const [status, setStatus] = useState('ALL');
+
   const [confirmDeleteDevice] = useMutation(DELETE_DEVICE, {
     onCompleted: () => {
       props.handleClosed({
@@ -35,7 +40,16 @@ const DeleteDevice = props => {
       variables: {
         deviceId
       },
-      refetchQueries: [{ query: GET_DEVICES }],
+      refetchQueries: [
+        { query: GET_DEVICES,
+          variables: { 
+            pageSize: limit,
+            after: (page * limit).toString(),
+            keyword: keyword,
+            deviceStatus: status
+          }
+        }
+      ],
       awaitRefetchQueries: true
     });
   };
