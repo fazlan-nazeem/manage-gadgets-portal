@@ -7,7 +7,7 @@ import 'src/mixins/chartjs';
 import theme from 'src/theme';
 import routes from 'src/routes';
 import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client';
-
+import { SecureApp } from "@asgardeo/auth-react";
 
 let apiUrl = window?.configs?.apiUrl ? window.configs.apiUrl : "/";
 if(process.env.REACT_APP_ENV == 'Development') {
@@ -29,13 +29,14 @@ const App = () => {
 
   return (
     <div>
+      <SecureApp>
         <ApolloProvider client={client}>
-          <ThemeProvider theme={theme}>
-            <GlobalStyles />
-            {routing}
-          </ThemeProvider>
+            <ThemeProvider theme={theme}>
+              <GlobalStyles />
+              {routing}
+            </ThemeProvider>
         </ApolloProvider>
-
+      </SecureApp>
     </div>
   );
 };
